@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>(1) 谈一谈cookie、sessionStorage、localStorage异同 | 毛金宇的博客</title>
+    <meta name="generator" content="VuePress 1.5.1">
+    <link rel="icon" href="/img/logo.png">
+    <meta name="description" content="前端知识笔记">
+    <link rel="preload" href="/assets/css/0.styles.bd82ae74.css" as="style"><link rel="preload" href="/assets/js/app.9bdda3f1.js" as="script"><link rel="preload" href="/assets/js/2.ad42e4e1.js" as="script"><link rel="preload" href="/assets/js/9.f6c5c6d5.js" as="script"><link rel="prefetch" href="/assets/js/10.acc1f7de.js"><link rel="prefetch" href="/assets/js/11.2a075a94.js"><link rel="prefetch" href="/assets/js/12.76ecb719.js"><link rel="prefetch" href="/assets/js/13.c2607379.js"><link rel="prefetch" href="/assets/js/14.77a61a1c.js"><link rel="prefetch" href="/assets/js/15.b135fd80.js"><link rel="prefetch" href="/assets/js/16.669d0299.js"><link rel="prefetch" href="/assets/js/17.b2ded449.js"><link rel="prefetch" href="/assets/js/18.ddc59e87.js"><link rel="prefetch" href="/assets/js/19.0b2da3f5.js"><link rel="prefetch" href="/assets/js/20.5824d6a6.js"><link rel="prefetch" href="/assets/js/21.b8bbf034.js"><link rel="prefetch" href="/assets/js/22.1a6c1613.js"><link rel="prefetch" href="/assets/js/23.926bc90e.js"><link rel="prefetch" href="/assets/js/24.2cde0b2c.js"><link rel="prefetch" href="/assets/js/25.59f19d04.js"><link rel="prefetch" href="/assets/js/26.228744cd.js"><link rel="prefetch" href="/assets/js/27.4c169e33.js"><link rel="prefetch" href="/assets/js/3.c0b05ab8.js"><link rel="prefetch" href="/assets/js/4.b1470975.js"><link rel="prefetch" href="/assets/js/5.b0000004.js"><link rel="prefetch" href="/assets/js/6.c5802c2a.js"><link rel="prefetch" href="/assets/js/7.ba94c52b.js"><link rel="prefetch" href="/assets/js/8.52952c2b.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.bd82ae74.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">毛金宇的博客</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/start/" class="nav-link">
+  笔记
+</a></div><div class="nav-item"><a href="/interviewQuestions/" class="nav-link router-link-active">
+  面试题
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/start/" class="nav-link">
+  笔记
+</a></div><div class="nav-item"><a href="/interviewQuestions/" class="nav-link router-link-active">
+  面试题
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/interviewQuestions/JS.html" class="sidebar-link">JS</a></li><li><a href="/interviewQuestions/Browser.html" aria-current="page" class="active sidebar-link">浏览器</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/interviewQuestions/Browser.html#_1-谈一谈cookie、sessionstorage、localstorage异同" class="sidebar-link">(1) 谈一谈cookie、sessionStorage、localStorage异同</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/interviewQuestions/Browser.html#浏览器存储" class="sidebar-link">浏览器存储</a></li><li class="sidebar-sub-header"><a href="/interviewQuestions/Browser.html#coolie" class="sidebar-link">Coolie</a></li><li class="sidebar-sub-header"><a href="/interviewQuestions/Browser.html#web存储" class="sidebar-link">web存储</a></li></ul></li></ul></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Vue</span> <span class="arrow right"></span></p> <!----></section></li><li><a href="/interviewQuestions/project.html" class="sidebar-link">项目</a></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h2 id="_1-谈一谈cookie、sessionstorage、localstorage异同"><a href="#_1-谈一谈cookie、sessionstorage、localstorage异同" class="header-anchor">#</a> (1) 谈一谈cookie、sessionStorage、localStorage异同</h2> <h3 id="浏览器存储"><a href="#浏览器存储" class="header-anchor">#</a> 浏览器存储</h3> <p>总的来说,现在市面上最常见的数据存储方案是以下三种：</p> <ul><li>Cookie</li> <li>web存储 (locaStorage和seesionStorage)</li> <li>IndexedDB</li></ul> <h3 id="coolie"><a href="#coolie" class="header-anchor">#</a> Coolie</h3> <p><strong>优点</strong></p> <p>Cookie的兼容性非常的好，兼容现在市面上所有的主流浏览器</p> <p><strong>缺点</strong></p> <ul><li>存储量小。基本上都是在4kb左右。</li> <li>影响性能。由于Cookie会由浏览器作为请求头发送，因此当Cookie存储信息过多时，会影响特定域的资源获取的效率，增加文档传输的负载。</li> <li>只能储存字符串。</li> <li>安全问题。存储在Cookie的任何数据可以被他人访问，因此不能在Cookie中储存重要的信息。</li> <li>由于第三方Cookie的滥用，所以很多老司机在浏览网页时会禁用Cookie，所以我们不得不测试用户是否支持Cookie，这也是很麻烦的一件事。</li> <li>操作麻烦。只能整体读取和覆盖，必须封装好对cookie的操作函数。document.cookie</li></ul> <h3 id="web存储"><a href="#web存储" class="header-anchor">#</a> web存储</h3> <p><strong>locaStorage</strong></p> <p><strong>locaStorage</strong>对象作为持久保存客户端数据的方案从功能上来讲，我们可以通过locaStorage在浏览器端存储键值对数据，它相比于cookie而言，提供了更为直观的API，且在安全上相对好一点，而且虽然locaStorage只能存储字符串，但它也可以存储字符串化的JSON数据，因此相比于cookie，locaStorage能存储更复杂的数据。</p> <p>特点：</p> <ul><li>存储时间长。持久保存客户端数据，直到用户清除</li> <li>操作简单。提供了更为直观的API</li> <li>存储空间大。提供最多5M大小</li> <li>更加安全。<strong>注意还是要不要在locaStorage中存储敏感信息</strong></li> <li>同源的文档间会共享locaStorage的数据，他们可以互相读取对方的数据，甚至有时会覆盖对方的数据。</li></ul> <p><strong>API</strong></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取</span>
+locaStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span><span class="token string">&quot;name&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// 设置</span>
+locaStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span><span class="token string">&quot;name&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;张三&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// 移除</span>
+locaStorage<span class="token punctuation">.</span><span class="token function">removeItem</span><span class="token punctuation">(</span><span class="token string">&quot;name&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// 清除所有</span>
+locaStorage<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>sessionStorage</strong></p> <p>它与 localStorage 相似，不同之处在于 localStorage里面存储的数据没有过期时间设置，而Session Storage只存储当前会话页的数据，当用户关闭当前会话页或浏览器时，数据会被清除。</p> <p>特点：</p> <ul><li>存储时间长。持久保存客户端数据，直到用户清除或关闭当前页面、浏览器</li> <li>操作简单。提供了更为直观的API</li> <li>存储空间大。提供最多5M大小</li> <li>更加安全。<strong>注意还是要不要在locaStorage中存储敏感信息</strong></li></ul> <p><strong>API</strong></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取</span>
+sessionStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span><span class="token string">&quot;name&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// 设置</span>
+sessionStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span><span class="token string">&quot;name&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;张三&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// 移除</span>
+sessionStorage<span class="token punctuation">.</span><span class="token function">removeItem</span><span class="token punctuation">(</span><span class="token string">&quot;name&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// 清除所有</span>
+sessionStorage<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/interviewQuestions/JS.html" class="prev">
+        JS
+      </a></span> <span class="next"><a href="/interviewQuestions/Vue/Vue.html">
+        Vue
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.9bdda3f1.js" defer></script><script src="/assets/js/2.ad42e4e1.js" defer></script><script src="/assets/js/9.f6c5c6d5.js" defer></script>
+  </body>
+</html>

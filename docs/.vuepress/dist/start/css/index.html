@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>布局原理 | 毛金宇的博客</title>
+    <meta name="generator" content="VuePress 1.5.1">
+    <link rel="icon" href="/img/logo.png">
+    <meta name="description" content="前端知识笔记">
+    <link rel="preload" href="/assets/css/0.styles.bd82ae74.css" as="style"><link rel="preload" href="/assets/js/app.9bdda3f1.js" as="script"><link rel="preload" href="/assets/js/2.ad42e4e1.js" as="script"><link rel="preload" href="/assets/js/17.b2ded449.js" as="script"><link rel="prefetch" href="/assets/js/10.acc1f7de.js"><link rel="prefetch" href="/assets/js/11.2a075a94.js"><link rel="prefetch" href="/assets/js/12.76ecb719.js"><link rel="prefetch" href="/assets/js/13.c2607379.js"><link rel="prefetch" href="/assets/js/14.77a61a1c.js"><link rel="prefetch" href="/assets/js/15.b135fd80.js"><link rel="prefetch" href="/assets/js/16.669d0299.js"><link rel="prefetch" href="/assets/js/18.ddc59e87.js"><link rel="prefetch" href="/assets/js/19.0b2da3f5.js"><link rel="prefetch" href="/assets/js/20.5824d6a6.js"><link rel="prefetch" href="/assets/js/21.b8bbf034.js"><link rel="prefetch" href="/assets/js/22.1a6c1613.js"><link rel="prefetch" href="/assets/js/23.926bc90e.js"><link rel="prefetch" href="/assets/js/24.2cde0b2c.js"><link rel="prefetch" href="/assets/js/25.59f19d04.js"><link rel="prefetch" href="/assets/js/26.228744cd.js"><link rel="prefetch" href="/assets/js/27.4c169e33.js"><link rel="prefetch" href="/assets/js/3.c0b05ab8.js"><link rel="prefetch" href="/assets/js/4.b1470975.js"><link rel="prefetch" href="/assets/js/5.b0000004.js"><link rel="prefetch" href="/assets/js/6.c5802c2a.js"><link rel="prefetch" href="/assets/js/7.ba94c52b.js"><link rel="prefetch" href="/assets/js/8.52952c2b.js"><link rel="prefetch" href="/assets/js/9.f6c5c6d5.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.bd82ae74.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">毛金宇的博客</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/start/" class="nav-link router-link-active">
+  笔记
+</a></div><div class="nav-item"><a href="/interviewQuestions/" class="nav-link">
+  面试题
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/start/" class="nav-link router-link-active">
+  笔记
+</a></div><div class="nav-item"><a href="/interviewQuestions/" class="nav-link">
+  面试题
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>HTML</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>CSS</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/start/css/" aria-current="page" class="active sidebar-link">Flex布局</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/start/css/#布局原理" class="sidebar-link">布局原理</a></li><li class="sidebar-sub-header"><a href="/start/css/#父项常用属性" class="sidebar-link">父项常用属性</a></li></ul></li><li><a href="/start/css/adaptation.html" class="sidebar-link">移动端适配方案</a></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>JavaScript</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>网络协议</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>TypeScript</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>项目</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h2 id="布局原理"><a href="#布局原理" class="header-anchor">#</a> 布局原理</h2> <p>flex 是 flexible box 的缩写，意为“弹性布局”，用来为盒模型提供最大的灵活性，任何一个容器都可以指定为 flex 布局。
+采用 Flex 布局的元素，称为 Flex 容器（Flex Container），简称“容器”。它的所有子元素自动成为容器成员，成为 Flex 项目（flex-item），简称“项目”</p> <ul><li><p>当我们为父盒子设为 flex 布局后，子元素的 float、clear 和 vertical-align 属性将失效。</p></li> <li><p>子项目（flex-item）可以横向排列也可以纵向排列</p></li></ul> <p>总结：通过给父盒子添加 <code>flex</code> 属性，来控制子盒子的位置和排列位置。</p> <h2 id="父项常用属性"><a href="#父项常用属性" class="header-anchor">#</a> 父项常用属性</h2> <ul><li><p><code>flex-direction</code>:设置主轴的方向  ： <code>row(默认)、row-reverse(反向横轴)、column(纵轴方向)、</code></p> <p>​									<code>column-reverse(反向纵轴)</code></p></li> <li><p><code>justify-content</code>:设置<code>主轴</code>上的子元素排列方式，<code>不影响子元素排列顺序</code></p> <ul><li><code>flex-start</code>:默认，头部对齐</li> <li><code>flex-end</code>:尾部对齐</li> <li><code>felx-center</code>:居中对齐</li> <li><code>space-around</code>:剩余空间平局分配</li> <li><code>space-between</code>:两边贴边，剩余平分</li></ul></li> <li><p><code>flex-wrap</code>:设置子元素是否换行</p> <ul><li><code>nowrap</code>:默认，不换行</li> <li><code>wrap</code>:换行</li></ul></li> <li><p><code>align-items</code>:设置<code>侧轴</code>上的子元素排列方式，<code>不影响子元素排列顺序</code>（单行）</p> <ul><li><code>flex-start</code>:默认，头部对齐</li> <li><code>flex-end</code>:尾部对齐</li> <li><code>felx-center</code>:居中对齐</li> <li><code>space-around</code>:剩余空间平局分配</li> <li><code>space-between</code>:两边贴边，剩余平分</li> <li><code>stretch</code>:拉伸至父盒子的高度，<code>不能设置子盒子的高度，否则不起效果</code></li></ul></li> <li><p><code>align-content</code>:设置<code>侧轴</code>上的子元素排列方式，<code>不影响子元素排列顺序</code>（多行）</p> <ul><li><code>flex-start</code>:默认，头部对齐</li> <li><code>flex-end</code>:尾部对齐</li> <li><code>felx-center</code>:居中对齐</li> <li><code>space-around</code>:剩余空间平局分配</li> <li><code>space-between</code>:两边贴边，剩余平分</li> <li><code>stretch</code>:设置子元素平分父盒子高度，<code>不能设置子盒子的高度，否则不起效果</code></li></ul></li></ul></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/start/html/canvas.html" class="prev">
+        Canvas
+      </a></span> <span class="next"><a href="/start/css/adaptation.html">
+        移动端适配方案
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.9bdda3f1.js" defer></script><script src="/assets/js/2.ad42e4e1.js" defer></script><script src="/assets/js/17.b2ded449.js" defer></script>
+  </body>
+</html>
