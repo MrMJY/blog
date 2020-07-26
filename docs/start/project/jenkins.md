@@ -75,3 +75,4 @@ vi /etc/sysconfig/jenkins
 + 安装**Node Plugin**
 
 ### 创建任务
+#### 配置任务
