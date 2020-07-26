@@ -72,3 +72,6 @@ vi /etc/sysconfig/jenkins
 ![默认插件](https://img-blog.csdn.net/20161222162747786)
 + 汉化插件 **Localization: Chinese (Simplified)**
 + 参数化构建 **Git Parameter Plug-In**
++ 安装**Node Plugin**
+
+### 创建任务
