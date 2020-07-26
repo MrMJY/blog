@@ -1,5 +1,5 @@
 module.exports = {
-  title: '毛金宇的博客',
+  title: '前端博客',
   description: '前端知识笔记',
   head: [
     ['link', { rel: 'icon', href: '/img/logo.png' }]
