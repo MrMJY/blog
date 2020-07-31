@@ -69,10 +69,40 @@ vi /etc/sysconfig/jenkins
 + [Jenkins插件源使用国内镜像中心的最新方法](https://blog.csdn.net/weixin_40046357/article/details/104489497)
 + [更改插件源为国内源](https://www.cnblogs.com/poloyy/p/12785401.html)
 ### 安装常用(默认)插件
-![默认插件](https://img-blog.csdn.net/20161222162747786)
+![默认插件](./img/default-plugin.png)
 + 汉化插件 **Localization: Chinese (Simplified)**
 + 参数化构建 **Git Parameter Plug-In**
-+ 安装**Node Plugin**
++ 安装**Node Plugin**(起到Jenkins与Node环境之间的连接作用)
+
+### 在服务器上搭建Node环境
++ 下载Node源码包，可以在window系统上下载Linux的Node源码包，也可以直接在Linux上直接下载。
+```cmd
+cd /usr/local/src/
+wget https://nodejs.org/dist/v12.18.3/node-v12.18.3-linux-s390x.tar.xz
+```
++ 解压`tar zxvf node-v12.18.3.tar.gz`
++ 编译安装
+```cmd
+cd node-v12.18.3
+./configure --prefix=/usr/local/node/12.18.3
+make
+make install
+```
++ 设置 nodejs 环境变量
+```cmd
+vim /etc/profile
+#在文件中输入一下内容
+#set for nodejs
+export NODE_HOME=/usr/local/node/0.10.24
+export PATH=$NODE_HOME/bin:$PATH
+```
++ :wq保存并退出，编译/etc/profile 使配置生效
+  `source /etc/profile`
++ 验证是否安装配置成功
+  `node -v`
++ 在Jenkins中配置Node路径
+
+不同的系统安装软件的方式可能不同，根据自己的实际情况选择一种安装方式。例如：apt-get、wget
 
 ### 创建任务
 #### 配置任务
