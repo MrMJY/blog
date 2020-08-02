@@ -90,7 +90,8 @@ module.exports = {
           title: '项目',
           collabsable: true,
           children: [
-            ['/start/project/jenkins', 'Jenkins']
+            ['/start/project/jenkins', 'Jenkins'],
+            ['/start/project/git', 'Git']
           ]
         }
       ],
