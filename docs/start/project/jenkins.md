@@ -75,24 +75,12 @@ vi /etc/sysconfig/jenkins
 + 安装**Node Plugin**(起到Jenkins与Node环境之间的连接作用)
 
 ### 在服务器上搭建Node环境
-+ 下载Node源码包，可以在window系统上下载Linux的Node源码包，也可以直接在Linux上直接下载。
-```cmd
-cd /usr/local/src/
-wget https://nodejs.org/dist/v12.18.3/node-v12.18.3-linux-s390x.tar.xz
-```
-+ 解压`tar zxvf node-v12.18.3.tar.gz`
-+ 编译安装
-```cmd
-cd node-v12.18.3
-./configure --prefix=/usr/local/node/12.18.3
-make
-make install
-```
++ 下载Node源码包，可以在window系统上下载Linux的[Node源码包](https://nodejs.org/dist/v12.18.3/node-v12.18.3-linux-x64.tar.xz)，也可以直接在Linux上直接下载。
++ 解压`xz -d node-v12.18.3-linux-x64.tar.xz`、`tar -xvf node-v12.18.3-linux-x64.tar`
 + 设置 nodejs 环境变量
 ```cmd
 vim /etc/profile
-#在文件中输入一下内容
-#set for nodejs
+#在文件中最下方添加
 export NODE_HOME=/usr/local/node/0.10.24
 export PATH=$NODE_HOME/bin:$PATH
 ```
