@@ -73,6 +73,8 @@ vi /etc/sysconfig/jenkins
 + 汉化插件 **Localization: Chinese (Simplified)**
 + 参数化构建 **Git Parameter Plug-In**
 + 安装**Node Plugin**(起到Jenkins与Node环境之间的连接作用)
++ Git(管理代码)
++ GitHub
 
 ### 在服务器上搭建Node环境
 + 下载Node源码包，可以在window系统上下载Linux的[Node源码包](https://nodejs.org/dist/v12.18.3/node-v12.18.3-linux-x64.tar.xz)，也可以直接在Linux上直接下载。
@@ -81,18 +83,22 @@ vi /etc/sysconfig/jenkins
 ```cmd
 vim /etc/profile
 #在文件中最下方添加
-export NODE_HOME=/usr/local/node/0.10.24
+export NODE_HOME=/usr/maojinyu/software/node-v12.18.3-linux-x64
 export PATH=$NODE_HOME/bin:$PATH
 ```
 + :wq保存并退出，编译/etc/profile 使配置生效
   `source /etc/profile`
 + 验证是否安装配置成功
   `node -v`
++ 安装**Node Plugin**(起到Jenkins与Node环境之间的连接作用)
 + 在Jenkins中配置Node路径
+  + 系统管理 -> 全局工具配置 -> NodeJS
+  ![配置node路径](./img/configNodejs.png)
 
 不同的系统安装软件的方式可能不同，根据自己的实际情况选择一种安装方式。例如：apt-get、wget
 
 ### 创建任务
-#### 配置任务
-#### 与代码仓库结合自动构建
-#### 构建后发送邮件执行shell脚本
+![创建自定义任务](./img/createjob.png)
+### 配置任务
+### 与代码仓库结合自动构建
+### 构建后发送邮件执行shell脚本
