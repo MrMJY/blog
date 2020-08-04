@@ -101,4 +101,16 @@ export PATH=$NODE_HOME/bin:$PATH
 ![创建自定义任务](./img/createjob.png)
 ### 配置任务
 ![配置任务](./img/configjob.png)
-### 与代码仓库结合自动构建
+### 与GitHub结合实现push自动构建
++ 在GitHub上申请[Personal access tokens](https://github.com/settings/tokens)
+  + 选择token权限
+  ![获取Personal access tokens](./img/token.png)
++ 设置项目的webhook，在项目的settings中
+  ![创建webhook](./img/webhook.png)
++ 设置jenkins监听webhook的请求
+  + 系统管理 -> 系统配置 -> GitHub 修改 保存
+  ![jenkins配置](./img/jenkins-conf.png)
+  + 修改任务配置
+  ![修改任务配置](./img/build.png)
+
+
