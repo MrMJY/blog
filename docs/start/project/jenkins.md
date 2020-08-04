@@ -102,5 +102,3 @@ export PATH=$NODE_HOME/bin:$PATH
 ### 配置任务
 ![配置任务](./img/configjob.png)
 ### 与代码仓库结合自动构建
-
-
