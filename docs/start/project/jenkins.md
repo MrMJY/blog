@@ -100,5 +100,7 @@ export PATH=$NODE_HOME/bin:$PATH
 ### 创建任务
 ![创建自定义任务](./img/createjob.png)
 ### 配置任务
+![配置任务](./img/configjob.png)
 ### 与代码仓库结合自动构建
+
 ### 构建后发送邮件执行shell脚本
