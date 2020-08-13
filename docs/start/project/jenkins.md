@@ -209,3 +209,6 @@ export PATH=$NODE_HOME/bin:$PATH
   + 解决方法：
   ![重置hook](./img/issue1.png)
 
+### 参数化构建
+未完待续。。。
+
