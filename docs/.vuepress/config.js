@@ -91,7 +91,8 @@ module.exports = {
           collabsable: true,
           children: [
             ['/start/project/jenkins', 'Jenkins'],
-            ['/start/project/git', 'Git']
+            ['/start/project/git', 'Git'],
+            ['/start/project/webpack', 'Webpack4.x']
           ]
         }
       ],
