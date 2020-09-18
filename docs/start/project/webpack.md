@@ -91,6 +91,19 @@ path: path.resolve(__dirname, 'dist')
 ```
 
 ### Module
+
+#### Module.noParse
+`RegExp [RegExp] function(resource) string [string]`
+
+阻止`webpack`解析与给定正则表达式匹配的任何文件。被忽略的文件不应具有`import`，`require`，`define`或任何其他导入机制的调用。忽略大型库时，这可以提高构建性能。
+```js
+module.exports = {
+  module: {
+    noParse: /jquery|lodash/ // noParse: [/jquery/, /lodash/]
+  }
+}
+```
+
 #### Module.rules
 规则数组，当规则匹配时使用。创建模块时，匹配配置的规则数组。这些规则能够修改模块的创建方式。这些规则能够对模块(module)应用 loader，或者修改解析器(parser)数组的每个元素是一个描述**规则的对象(Rule)**，多个 loader 顺序**从后往前**
 
@@ -140,6 +153,49 @@ path: path.resolve(__dirname, 'dist')
   ```
 #### Rule.loader
 Rule.loader 是 Rule.use: [ { loader } ] 的简写。
+
+### Resolve
+配置如何解析模块。简单来说就是配置`webpack`查找模块解析模块的方式，`webpack`设置了合理的默认解析查找规则，可以通过此配置项，进行调整和更改，在一定范围内可以起到优化的作用。
+#### resolve.alias
+
+`object`
+
+创建别名以更轻松地`import`或`require`某些模块。`resolve.alias`优先于其他模块分辨率。例如：给`src`目录起一个别名`@`。
+```js
+const path = require('path');
+
+module.exports = {
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      Utils: path.resolve(__dirname, 'src/utils/'),
+      Assets: path.resolve(__dirname, 'src/assets/')
+    }
+  }
+}
+```
+
+#### resolve.extensions
+`[string] = ['.wasm', '.mjs', '.js', '.json']`
+
+尝试按此配置项的顺序解析那些未指定扩展名的模块。
+> 如果多个文件共享相同的名称，但具有不同的扩展名，则`webpack`将使用数组中第一个列出的扩展名解析该文件，然后跳过其余文件。
+```js
+module.exports = {
+  resolve: {
+    extensions: ['.js', '.json', '.css'] // 引用频率越高的，写在前面
+  }
+}
+```
+
+#### resolve.modules
+`[string] = ['node_modules']`
+
+告诉`webpack`解析模块时应搜索哪些目录。绝对路径和相对路径都可以使用，但是请注意它们的行为会有所不同。
++ 相对路径
+  + 通过搜索当前目录及其祖先（即`./node_modules`、`../node_modules`等），将类似于`Node`扫描`node_modules`的方式扫描相对路径。
++ 绝对路径
+  + 仅在给定目录中搜索(推荐)，减少一层一层的搜索有助于提高编译速度。
 
 ## Loaders
 ### JS资源
@@ -386,11 +442,20 @@ module.exports = {
 + [extract-text-webpack-plugin](https://github.com/webpack-contrib/extract-text-webpack-plugin) (更复杂，但在所有用例中都适用)
 
 #### [postcss-loader](https://github.com/postcss/postcss)
-PostCSS 是一个允许使用 JS 插件转换样式的工具。 这些插件可以检查（lint）你的 CSS，支持 CSS Variables 和 Mixins， 编译尚未被浏览器广泛支持的先进的 CSS 语法，内联图片，以及其它很多优秀的功能。
+[PostCSS](https://github.com/postcss/postcss) 是一个允许使用 JS 插件转换样式的工具。 这些插件可以检查（lint）你的 CSS，支持 CSS Variables 和 Mixins， 编译尚未被浏览器广泛支持的先进的 CSS 语法，内联图片，以及其它很多优秀的功能。
 > `postcss-loader`只是核心loader，并不会下载依赖的插件，所以你需要去自己找符合需求的[插件](https://github.com/postcss/postcss)。
 + [Autoprefixer](https://github.com/postcss/autoprefixer) 添加各个浏览器的私有前缀插件
+> PostCSS插件，用于解析CSS并使用“[Can I Ues](https://caniuse.com/)”中的值向CSS规则添加供应商前缀。 它是Google推荐的，并在Twitter和阿里巴巴中使用。它会根据项目适用于哪些浏览器来自动添加私有前缀。
 
-> PostCSS 的配置方式也有多种，可以写在`webpack.config.js`中，也可以单独写一个配置文件。
+:::tip 关于Can I Use
+它是根据`browserslist`筛选出符合的本项目的浏览器，具体的关于`browserslist`可查看这篇文章[前端工程基础知识点--Browserslist (基于官方文档翻译）](https://juejin.im/post/6844903669524086797)
+:::
+
+> PostCSS 的配置方式也有多种，可以写在`webpack.config.js`中，也可以单独写一个配置文件。常见的方式是在项目根目录下新建`postcss.config.js`或`.postcssrc.json`，第一种更灵活，可以根据环境变量做不动的设置。
+
+**更多的参考**
++ [PostCSS配置指北](https://github.com/ecmadao/Coding-Guide/blob/master/Notes/CSS/PostCSS%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8C%97.md)
++ [PostCSS自学笔记](https://segmentfault.com/a/1190000010926812)
 
 ### 图片资源
 #### file-loader
@@ -604,6 +669,97 @@ module.exports = {
 
 `webpack4.x`压缩相关配置有自己的默认值，如果想覆盖，请使用像`optimize-css-assets-webpack-plugin`的插件，并配置`optimization.minimizer`,需要注意会覆盖JS模块的压缩，所以需要谨慎使用。
 
+### 压缩相关
+`webpack4.x`中所有与性能相关的大部分都在`optimization`选项中。
+#### 压缩js
+`webpack4.x`集成了默认的压缩，当构建模式为`production`时，自动会压缩js代码。当然你也可以重写默认的配置。官方推荐的是`terser-webpack-plugin`
+
+**使用**
+```js
+module.exports = {
+  optimization: {
+    minimize: true, // 是否开启压缩功能，总开关
+    minimizer: [
+      new TerserPlugin({
+        test: /\.js(\?.*)?$/i, // 处理匹配的文件
+        include: /\/src/, // 设置处理范围
+        exclude: /\/node_modules/, // 设置排除范围
+        cache: true, // 启用缓存
+        parallel: 3, // 使用多进程并行运行可提高构建速度，默认数量：os.cpus().length - 1
+        sourceMap: true,
+        sourceMap: true,
+      }),
+    ],
+  },
+}
+```
+**选项**
+|名称|类型|默认值|描述|
+|---|---|---|---|
+|`test`|`{String|RegExp|Array<String|RegExp>}`|`/\.m?js(\?.*)?$/i`|筛选符合条件的文件进行处理|
+|`include`|`{String|RegExp|Array<String|RegExp>}`|`undefined`|设置搜索范围|
+|`exclude`|`{String|RegExp|Array<String|RegExp>}`|`undefined`|设置排除范围|
+|`cache`|`{Boolean|String}`|`true`|是否缓存编译结果，默认的缓存路径是`node_modules/.cache/terser-webpack-plugin`，*webpack5已忽略此选项*|
+|`cacheKeys`|`{Function}`|`defaultCacheKeys => defaultCacheKeys`|设置缓存时的唯一key，*webpack5已忽略此选项*|
+|`parallel`|`{Boolean|Number}`|`true`|多线程编译，值为`true`时，为当前cpu内核数减一|
+|`sourceMap`|`{Boolean}`|`false`|值使用的是`devtool`中的`source-map`,`inline-source-map`,`hidden-source-map`,` nosources-source-map`|
+|`minify`|`{Function}`|`undefined`|可以重写压缩的功能，使用自己自定义的压缩规则|
+|`terserOptions`|`{Object}`|[default](https://github.com/terser/terser#minify-options)|压缩时配置项|
+|`extractComments`|`{Boolean|String|RegExp|Function<(node, comment) -> Boolean|Object>|Object}`|`true`|是否将注释提取到单独的文件中，默认情况下，仅使用`/^\**|@preserve|@license|@cc_on/i`条件提取注释，并删除其余注释。|
+
+#### 压缩css
+`webpack4.x`不再使用`ExtractTextPlugin`压缩css，推荐使用的是`optimize-css-assets-webpack-plugin`，然后设置`optimization.minimizer`，这会覆盖`webpack`提供的默认值，因此请确保还指定一个JS压缩器。
+
+`optimize-css-assets-webpack-plugin`将在`Webpack`构建期间搜索`CSS`资源，并优化/最小化`CSS`（默认情况下，它使用`cssnano`，但可以指定自定义`CSS`处理器）。它解决了`extract-text-webpack-plugin`构建中`css`添加重复的问题。
+
+**使用**
+```js
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        loader: MiniCssExtractPlugin.extract('style-loader', 'css-loader')
+      }
+    ]
+  },
+  plugins: [
+    // 提取css到单独的文件
+    new MiniCssExtractPlugin({
+      filename: 'style/[name].css',
+      ignoreOrder: false, // 删除有关顺序冲突的警告
+    })
+  ],
+  optimization: {
+    // 压缩器
+    minimizer: [
+      new TerserJSPlugin({}), // 官方文档有一个 '...' 的语法，但是没有成功，报错配置无效
+      // 压缩CSS
+      new OptimizeCSSAssetsPlugin({
+        assetNameRegExp: /\.optimize\.css$/g, // 默认为 /\.css$/g
+        cssProcessor: require('cssnano'), // 默认使用的是 cssnano 解析器
+        cssProcessorPluginOptions: { // 对解析器的配置
+          preset: ['default', { 
+              discardComments: { removeAll: true } // 去掉注释
+            }
+          ]
+        },
+        canPrint: true // 是否打印编译信息
+      })
+    ]
+  }
+};
+```
+**选项**
+|名称|类型|默认值|描述|
+|---|---|---|---|
+|`assetNameRegExp`|正则|`/\.css$/g`|符合匹配的文件才会被插件压缩，不是匹配源文件而是基于其他`loader`转换输出的文件名|
+|`cssProcessor`|`promise`|`cssnano`|用于优化/压缩`CSS`的`CSS`处理器|
+|`cssProcessorOptions`|`{Object}`|`{}`|对`CSS`处理器的配置|
+|`cssProcessorPluginOptions`|`{Object}`|`{}`|传递给`CSS`处理器的插件选项|
+
 ### webpack自带的pulgin
 #### webpack.ProvidePlugin
 自动加载模块，并将模块注入到引用它的模块中，使用注入的模块时不必引入。
@@ -627,9 +783,117 @@ jQuery('#app') // 起作用，不会报找不到 jQuery 的错误
 new Vue({}) // 起作用，不会报找不到 Vue 的错误
 ```
 
+#### webpack.DefinePlugin
+`DefinePlugin`允许您创建可以在编译时配置的全局常量。这对于在开发版本和生产版本之间允许不同的行为很有用。这个地方指的是在代码中而不是配置文件中，配置文件中使用的是`webpack`的环境变量，代码中使用的全局常量的环境变量。
+
+**使用**
+```js
+// 这些值将内联到代码中，从而允许最小化操作删除多余的条件代码。
+const webpack = require('webpack')
+
+const webpackConfig = {
+  plugins: [
+    new webpack.DefinePlugin({
+      PRODUCTION: JSON.stringify(true),
+      VERSION: JSON.stringify('v1.2'),
+      BROWSER_SUPPORTS_HTML5: true,
+      'typeof window': JSON.stringify('object'),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    })
+  ]
+}
+```
+```js
+// 代码中使用这些全局环境变量
+console.log('Running App version ' + VERSION);
+if(!BROWSER_SUPPORTS_HTML5) require('html5shiv');
+if (PRODUCTION) {
+  console.log('production code')
+} else {
+  console.log('debuge info')
+}
+```
+:::tip 注意
+在为`process`定义值时，最好使用`'process.env.NODE_ENV'：JSON.stringify('production')`而不是`process：{env：{NODE_ENV：JSON.stringify('production')}}`。使用后者将覆盖`process`对象，这可能会破坏与期望在`process`对象上定义其他值的某些模块的兼容性。
+:::
+> 当代码编译压缩之后会剔除那些不满足全局变量的代码，已达到最大程度的压缩代码。
+
+### 代码分割
+`SplitChunkPlugin`是`webpack4.x`内置的一个开箱即用的**提取公共代码，代码分割**的插件。相比于`CommonsChunkPlugin`，增加了更多的功能来进一步优化。
+
+默认情况下，它仅影响按需块，因为更改`entry`块会影响`HTML`文件应包含的`script`标签以运行项目。
+
+`webpack`将根据以下条件自动拆分`chunk`：
++ 可以被共享的新`chunk`，或者模块来自`node_modules`文件夹
++ 新的`chunk`大于20kb(在gz压缩之前)
++ 当按需加载`chunk`时，并行请求的最大数量小于或等于30
++ 初始页面加载时并行请求的最大数量小于或等于30
+> 当尝试满足最后两个条件时，最好使用较大的`chunk`。
+
+#### 默认值
+```js
+module.exports = {
+  optimization: {
+    splitChunks: {
+      chunks: 'async',
+      minSize: 20000,
+      minRemainingSize: 0,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
+      automaticNameDelimiter: '~',
+      enforceSizeThreshold: 50000,
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    }
+  }
+}
+```
+:::warning 注意
+当webpack处理文件路径时，它们在Unix系统上始终包含/，在Windows上始终包含\。 这就是为什么在{cacheGroup} .test字段中使用[\\ /]来表示路径分隔符的原因。 在跨平台使用时，{cacheGroup} .test中的/或\将导致问题。
+:::
+
+#### Optimization.splitChunks配置项
+|名称|类型|默认值|描述|
+|---|---|---|---|
+|`automaticNameDelimiter`|`{String}`|`~`|默认情况下，webpack将使用块的来源和名称生成名称（例如vendors~main.js）。此选项使您可以指定用于生成名称的定界符。|
+|`chunks`|`{String|Function}`|`'async'`|这表明将选择哪些块进行优化，有效值为`all`，`async`和`initial`。提供`all`可能特别强大，因为这意味着即使在异步和非异步块之间也可以共享块。|
+|`maxAsyncRequests`|`{Number}`|`30`|按需加载时的最大并行请求数|
+|`maxInitialRequests`|`{Number}`|`30`|入口点的最大并行请求数|
+|`minChunks`|`{Number}`|`1`|拆分前必须共享模块的最小块数|
+|`minSize`|`{Number}`|`20000`|生成块的最小大小(以字节为单位)|
+|`enforceSizeThreshold`|`{Number}`|`50000`|强制执行拆分的大小的阈值，其他限制(`minRemainingSize`，`maxAsyncRequests`，`maxInitialRequests`)将被忽略|
+|`maxSize`|`{Number}`|`0`|告诉`webpack`尝试将大于`maxSize`字节的块拆分为较小的部分|
+|`maxAsyncSize`|`{Number}`||与`maxSize`类似，区别在于仅会影响按需加载块|
+|`maxInitialSize`|`{Number}`||与`maxSize`类似，区别在于仅会影响初始加载块|
+|`name`|`{Boolean|Function}`|`true`|拆分块的名称。提供`true`将基于块和缓存组密钥自动生成一个名称|
+|`automaticNamePrefix`|`{String}`|`''`|为创建的块设置名称前缀|
+|`cacheGroups`|`{Object}`|见上面配置|缓存组可以继承/覆盖`splitChunks.*`中的任何选项，但是`test`，`priority`和`reuseExistingChunk`只能在高速缓存组级别配置，要禁用任何默认缓存组，请将它们设置为`false`|
+
+#### splitChunks.cacheGroups.{cacheGroup}配置项
+|名称|类型|默认值|描述|
+|---|---|---|---|
+|`priority`|`{Number}`|`0`|一个模块可以属于多个缓存组。优化将首选具有较高`priority`的缓存组|
+|`reuseExistingChunk`|`{Boolean}`||如果当前`chunck`包含已从主捆绑包中拆分出的模块，则它将被重用，而不是生成新的模块。|
+|`type`|`{Function|RegExp|String}`|`''`|允许按模块类型将模块分配给缓存组|
+|`test`|`{Function|RegExp|String}`|`''`|控制此缓存组选择的模块。省略它会选择所有模块。|
+|`filename`|`{Function|String}`|`''`|仅在`entry`模块时才允许覆盖文件名|
+|`enforce`|`{Boolean}`|`false`|告诉`webpack`忽略`splitChunks.minSize`，`splitChunks.minChunks`，`splitChunks.maxAsyncRequests`和`splitChunks.maxInitialRequests`只为这个高速缓存组创建块|
+|`idHint`|`{String}`|`''`|设置块ID的提示。它将被添加到块的文件名中。|
+
 ### 其他功能
 #### clean-webpack-plugin
-清除 webpack 构建输出的目录，防止文件越来越多。
+清除`webpack.output.path`目录，防止文件越来越多。
 
 **使用**
 ```js
@@ -642,3 +906,122 @@ const webpackConfig = {
 }
 ```
 
+## 代码分割
+此功能使您可以将代码分成多个`bundle`，然后**按需**或**并行**加载。它可用于实现较小的捆绑包并控制资源负载优先级，如果正确使用，则会对负载时间产生重大影响。
+
+> `webpack4.x`已经将`CommonsChunkPlugin`移除，使用`SplitChunksPlugin`替代。
+
+共有三种通用的代码拆分方法：
++ 入口点：使用`entry`配置手动拆分代码
+  + 这是拆分代码的最简单方法，更偏向手动拆分，并且有一些问题，最大的问题就是**可能会包含重复的模块**。
++ 去除重复代码：使用`SplitChunksPlugin`来去除重复数据，将重复代码拆分出单独的`bundle`
+  + 通过`SplitChunksPlugin`可以灵活的提取公共代码（推荐）
++ 动态导入：通过模块内的内联导入函数调用拆分代码
+  + 在导入模块时，进行**特殊的注释**，`webpack`支持两种导入方式
+
+### 入口点分割
+入口点分割其实就是默认的多入口，每一个入口构建出一个`bundle`，是天然的分割。存在的问题是，如果多个入口中包含相同的模块，那么这个模块都会被打包进各自的`bundle`中。
+```js
+const path = require('path');
+
+module.exports = {
+  mode: 'development',
+  // 有两个入口文件，每个入口文件都引入了 loadsh
+  entry: {
+    index: './src/index.js',
+    another: './src/another-module.js',
+  },
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  }
+}
+```
+构建结果，从大小上看得出都将`lodash`打包进来了。
+```js
+...
+            Asset     Size   Chunks             Chunk Names
+another.bundle.js  550 KiB  another  [emitted]  another
+  index.bundle.js  550 KiB    index  [emitted]  index
+Entrypoint index = index.bundle.js
+Entrypoint another = another.bundle.js
+...
+```
+
+**结论：这不是理想的代码分割。**
+
+### 去除重复代码(提取公共代码)
+在这里重点是使用`webpack4.x`内置的`SplitChunksPlugin`插件进行代码分割，相关的配置在`optimization.splitChunks`配置项下。
+```js
+const path = require('path');
+module.exports = {
+  mode: 'development',
+  entry: {
+    index: './src/index.js',
+    another: './src/another-module.js',
+  },
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  }
+}
+```
+
+### 动态导入
+对于动态代码拆分，`webpack`支持两种类似的技术。一种是符合`ECMAScript`规范的`import()`语法进行动态导入(推荐)。另一种是特定于`webpack`的`require.ensure`。
+> 注意使用`chunkFilename`，它确定非入口文件的名称。
+```js
+// src/index.js
+function getComponent() {
+  // 使用 import 方法异步加载 lodash 模块，前面的注释很关键，然后通过回调获取加载结果
+  return import(/* webpackChunkName: "lodash" */ 'lodash').then(({ default: _ }) => {
+    const element = document.createElement('div');
+    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+    return element;
+  }).catch(error => 'An error occurred while loading the component');
+}
+
+getComponent().then(component => {
+  document.body.appendChild(component);
+})
+```
+可以通过`async`函数转换为同步
+```js
+// src/index.js
+async function getComponent() {
+  const element = document.createElement('div');
+  // 使用 import 方法异步加载 lodash 模块，前面的注释很关键，然后通过回调获取加载结果
+  const _ = await import(/* webpackChunkName: "lodash" */ 'lodash')
+  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+  return element;
+}
+document.body.appendChild(getComponent())
+```
+### 预请求/预加载
+`webpack 4.6.0+`开始支持预请求和预加载。此功能换言之是懒加载的功能。
++ `prefetch`: 懒加载，浏览器在空闲时间加载
+  + 场景：当点击某个按钮才加载相应的`bundle`时，使用懒加载，不点击不加载。
++ `preload`: 提前加载依赖，并行于父模块加载，父模块加载完成开始`prefetch`
+  + 场景：某个模块需要其他依赖，需要提前下载依赖，使用`preload`
+```js
+// 懒加载
+import(/* webpackPrefetch: true */ 'LoginModal')
+// 预加载
+import(/* webpackPreload: true */ 'ChartingLibrary')
+```
+
+:::warning 注意
+错误地使用webpackPreload实际上会影响性能，因此使用时请务必小心。
+:::
+
+### 打包分析工具
++ [webpack-chart](https://alexkuz.github.io/webpack-chart/)：Webpack统计信息的交互式饼图。
++ [webpack-visualizer](https://chrisbateman.github.io/webpack-visualizer/)：可视化和分析您的包，以查看哪些模块占用了空间，哪些可能是重复的。
++ [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)：一个插件和CLI实用程序，将包内容表示为方便的交互式可缩放树形图。
++ [webpack软件包优化助手](https://webpack.jakoblind.no/optimize)：此工具将分析您的软件包，并为您提供切实可行的建议，以减少软件包的大小。
++ [bundle-stats](https://github.com/bundle-stats/bundle-stats)：生成捆绑包报告（捆绑包大小，资产，模块），并比较不同版本之间的结果。
