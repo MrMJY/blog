@@ -90,6 +90,17 @@ webpack会自动寻找根目录下的 webpack.config.js 配置文件，以这个
 path: path.resolve(__dirname, 'dist')
 ```
 
+#### libraryTarget
+`string = 'var'`
+
+配置如何导出一个公共的库。它有以下值可选`var`、`this`、`window`、`global`、`commonjs`、`amd`。通常与`output.library`使用。
+> 这个选项意思就是将一个模块作为公共的库，如何导出到全局中，`var`就是通过`var`声明一个变量来接收导出的内容，`window`就是在`window`将导出的内容挂在`window`上，以此类推。
+
+#### library
+`string object`
+
+配置导出的公共库的名称。搭配`output.library`使用，导出的内容的变量名称。
+
 ### Module
 
 #### Module.noParse

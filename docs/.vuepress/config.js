@@ -22,6 +22,10 @@ module.exports = {
         link: '/'
       },
       {
+        text: 'Webpack源码',
+        link: '/webpackSource/'
+      },
+      {
         text: '笔记',
         link: '/start/'
       },
@@ -120,6 +124,13 @@ module.exports = {
           collabsable: true,
           path: '/interviewQuestions/project'
         }
+      ],
+      '/webpackSource': [
+        {
+          title: "基础知识",
+          collabsable: true,
+          path: '/webpackSource/'
+        },
       ]
     }
   }
