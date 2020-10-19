@@ -131,6 +131,18 @@ module.exports = {
           collabsable: true,
           path: '/webpackSource/'
         },
+        {
+          title: "源码调试",
+          collabsable: true,
+          path: '/webpackSource/debugger'
+        },
+        {
+          title: "源码学习",
+          collabsable: true,
+          children: [
+            ['/webpackSource/source/webpack-cli', 'Webpack-cli'],
+          ]
+        },
       ]
     }
   }
