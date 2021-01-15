@@ -85,7 +85,7 @@ const runCLI = async (cliArgs) => {
         // 'webpack-cli ./index.js'
         // if the unknown arg starts with a '-', it will be considered
         // an unknown flag rather than an entry
-        // 如果出现不认识的参数，尝试进行判断是否是编译入口文件(entry)
+        // 如果出现不认识的参数，尝试①进行判断是否是编译入口文件(entry)、②进行提示，尝试获得正确的参数
         let entry;
         if (parsedArgs.unknownArgs.length > 0 && !parsedArgs.unknownArgs[0].startsWith('-')) {
             if (parsedArgs.unknownArgs.length === 1) {
@@ -107,6 +107,7 @@ const runCLI = async (cliArgs) => {
             await cli.run(opts, core);
             return;
         }
+        // 如果没有 unknownArgs 则执行下面代码
         const parsedArgsOpts = parsedArgs.opts;
         // Enable/Disable color on console
         options.enabled = parsedArgsOpts.color ? true : false;
@@ -162,7 +163,7 @@ class WebpackCLI extends GroupHelper {
   }
   // 将命令行传入的参数转换成合并到this.compilerConfiguration
   async processArgs(args, cliOptions) {
-    // 对这些参数进行了map分组
+    // 对这些args参数按group进行了分组,使用map结构
     this.setMappedGroups(args, cliOptions);
     // 将help分组的命令详细描述进行打印输出，创建this.groupHelper
     this.resolveGroups(args);
@@ -175,6 +176,8 @@ class WebpackCLI extends GroupHelper {
     await this.processArgs(args, cliOptions);
     // 调用webpack()创建compiler实例对象
     await this.compilation.createCompiler(this.compilerConfiguration);
+    // ① 注册 webpackProgressPlugin，然后开始编译
+    // ② 针对 watch、interactive 进行处理
     const webpack = await this.compilation.webpackInstance({
         options: this.compilerConfiguration,
         outputOptions: this.outputConfiguration,
@@ -197,3 +200,101 @@ class WebpackCLI extends GroupHelper {
 + `run`函数调用了上面两个函数，并且创建了`webpack`
 
 到此，在运行`webpack`前获取命令行命令，获取配置文件的配置，合并配置等操作都完成了。更多的关于`webpack-cli`使用请查看[官方文档](https://webpack.js.org/api/cli/)。
+
+## Compiler类
+定义在`lib/utils/Compiler.js`中
+```js
+class Compiler {
+    constructor() {
+        // 给 webpack 的最终 options
+        this.compilerOptions = {};
+    }
+    // ...省略部分函数
+    // 调用 compiler.run() 开始编译
+    async invokeCompilerInstance(lastHash, options, outputOptions) {
+        // eslint-disable-next-line  no-async-promise-executor
+        return new Promise(async (resolve) => {
+            await this.compiler.run((err, stats) => {
+                if (this.compiler.close) {
+                    this.compiler.close(() => {
+                        // 编译结束后的回调函数，可以输出完整的配置信息(webpack.json)
+                        const content = this.compilerCallback(err, stats, lastHash, options, outputOptions);
+                        resolve(content);
+                    });
+                } else {
+                    const content = this.compilerCallback(err, stats, lastHash, options, outputOptions);
+                    resolve(content);
+                }
+            });
+        });
+    }
+    // 创建 webpack 的 compiler 实例
+    async createCompiler(options) {
+        try {
+            // 创建实例
+            this.compiler = await webpack(options);
+            this.compilerOptions = options;
+        } catch (err) {
+            // https://github.com/webpack/webpack/blob/master/lib/index.js#L267
+            // https://github.com/webpack/webpack/blob/v4.44.2/lib/webpack.js#L90
+            const ValidationError = webpack.ValidationError ? webpack.ValidationError : webpack.WebpackOptionsValidationError;
+            // In case of schema errors print and exit process
+            // For webpack@4 and webpack@5
+            if (err instanceof ValidationError) {
+                logger.error(`\n${err.message}`);
+            } else {
+                logger.error(`\n${err}`);
+            }
+            process.exit(2);
+        }
+    }
+    // 注册 webpackProgressPlugin，然后开始编译
+    async webpackInstance(opts) {
+        const { outputOptions, options } = opts;
+        const lastHash = null;
+
+        const { ProgressPlugin } = webpack;
+        if (options.plugins) {
+            options.plugins = options.plugins.filter((e) => e instanceof ProgressPlugin);
+        }
+
+        if (outputOptions.interactive) {
+            const interactive = require('./interactive');
+            return interactive(options, outputOptions);
+        }
+        // 多个编译
+        if (this.compiler.compilers) {
+            this.compiler.compilers.forEach((comp, idx) => {
+                bailAndWatchWarning(comp); //warn the user if bail and watch both are used together
+                // 注册 webpackProgressPlugin
+                this.setUpHookForCompilation(comp, outputOptions, options[idx]);
+            });
+        } else {
+            // 警告同时使用 bail 和 watch，在第一次编译出错时就会退出
+            bailAndWatchWarning(this.compiler);
+            // 注册 webpackProgressPlugin
+            this.setUpHookForCompilation(this.compiler, outputOptions, options);
+        }
+
+        if (outputOptions.watch) {
+            const watchOptions = outputOptions.watchOptions || {};
+            if (watchOptions.stdin) {
+                process.stdin.on('end', function () {
+                    process.exit();
+                });
+                process.stdin.resume();
+            }
+            watchInfo(this.compiler);
+            // 开始监视编译，不输出文件
+            await this.invokeWatchInstance(lastHash, options, outputOptions, watchOptions);
+        } else {
+            // 开始编译
+            return await this.invokeCompilerInstance(lastHash, options, outputOptions);
+        }
+    }
+}
+```
+`Compiler`类最重要的是这3个`createCompiler`、`webpackInstance`、`invokeCompilerInstance`函数，单从名字上来看就很明显了。
++ `createCompiler`: 这个是调用`webpack(options)`，创建编译实例的（`webpack`的`compiler`）
++ `webpackInstance`: 这个是对创建的实例注册`webpackProgressPlugin`,对开启`watch`做了处理，最后调用`invokeCompilerInstance`
++ `invokeCompilerInstance`: 调用编译实例。调用`compiler.run()`开始编译
