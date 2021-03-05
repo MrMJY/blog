@@ -143,6 +143,7 @@ module.exports = {
             ['/webpackSource/source/webpack-cli', 'Webpack-cli'],
             ['/webpackSource/source/webpack', 'Webpack'],
             ['/webpackSource/source/plugins', '内置插件'],
+            ['/webpackSource/source/moduleFactory', 'ModuleFactory'],
           ]
         },
       ]

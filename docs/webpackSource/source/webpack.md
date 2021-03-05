@@ -531,8 +531,9 @@ class Compilation extends Tapable {
 		) {
 			throw new Error("Parameter 'dependency' must be a Dependency");
 		}
+		// 不同的 dependency 其 constructor 肯定不同
 		const Dep = /** @type {DepConstructor} */ (dependency.constructor);
-		// 获得模块对应的工厂函数（不同的模块工厂函数不同）
+		// 不同的依赖获得不同的工厂函数，用来创建模块
 		const moduleFactory = this.dependencyFactories.get(Dep);
 		if (!moduleFactory) {
 			throw new Error(
