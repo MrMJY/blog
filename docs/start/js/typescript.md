@@ -89,6 +89,21 @@ console.log(colorName);  // 显示'Green'因为上面代码里它的值是2
 ② 根据值获得枚举的名称
 :::
 
+**object**
+
+`object`表示非原始类型，也就是除`number`、`string`、`boolean`之外的类型。
+```ts
+function getObj(obj: object): object {
+  console.log(obj);
+  return {
+    name: '卡卡西',
+    age: 18
+  }
+}
+console.log(getObj({}));
+// 正确的，只会校验参数是否是object，如果要校验对象中的属性，则需要使用接口
+```
+
 **Any**
 
 有时候，我们会想要为那些在**编程阶段还不清楚**类型的变量指定一个类型。这种情况下，我们不希望类型检查器对这些值进行检查而是直接让它们通过编译阶段的检查。 那么我们可以使用 any类型来标记这些变量。
@@ -165,7 +180,7 @@ function sayHello(name: string):void {         // 函数无返回值，使用 vo
 
 **类型断言**
 
-类型断言好比强制的类型转换，但是不进行特殊的数据检查和解构。
+类型断言是告诉编译器这个变量的明确类型，“相信我，我知道我在做什么”。好比其它语言的类型转换，但是不进行特殊的数据校验和结构，它没有运行时影响，只在编译阶段起作用。
 ```ts
 // 尖括号语法
 let someValue: any = "this is a string";
@@ -192,7 +207,7 @@ num = 123;
 
 **类型推断**
 
-概念：如果变量的声明和初始化是在同一行，可以省略掉变量类型声明。
+如果变量变量没有明确指定类型，编译器会自动推断出一个类型。
 ```ts
 let num: number = 123;
 // 简写
@@ -231,7 +246,7 @@ let stu = CreateStudent({
 console.log(stu)
 ```
 ::: tip 提示
-`interface`中定义的属性是必需的，如果没有则会报错。如果有没有定义的字段，并不会报错。
+`interface`中定义的属性是必需的，如果没有则会报错。如果有没有定义的字段，并不会报错。可以与`object`类型进行对比比较。
 :::
 #### 可选属性
 接口里的属性不全都是必需的。带有可选属性的接口与普通的接口定义差不多，只是在可选属性名字定义的后面加一个`?`符号
@@ -295,7 +310,7 @@ interface UserObj {
 let user: UserObj = { name: '张三', work: '搬砖的' }
 ```
 ### 类类型接口
-`TypeScript`也能够用它来明确的强制一个类去符合某种契约(规范、行为)。通过`implements`关键字将接口应用到类上。
+`TypeScript`也能够用它来明确的强制一个类去符合某种契约(规范、行为)。通过`implements`关键字将接口应用到类上。一个类也可以实现多个接口，多个接口用`,`进行分割。
 ```ts
 // 定义类类型接口
 interface Animal {
@@ -303,6 +318,8 @@ interface Animal {
   eat(food: string): void;  // 方法成员
 }
 // 应用类类型接口
+// 实现多个接口(同时实现Animal和Dog两个接口)
+// class Animal implements Animal, Dog
 class Animal implements Animal {
   name: string;
   constructor(name: string) {
@@ -317,7 +334,7 @@ const dog = new Animal('二哈')
 dog.eat('狗粮')
 ```
 ### 继承接口
-和类一样，接口也可以相互继承。这让我们能够从一个接口里复制成员到另一个接口里，可以更灵活地将接口分割到可重用的模块里。
+和类一样，接口也可以相互继承。这让我们能够从一个接口里复制成员到另一个接口里，可以更灵活地将接口分割到可重用的模块里。可以继承多个接口，用`,`分割。
 ```ts
 interface ProgrammerOpt {
   name: string;
@@ -604,8 +621,55 @@ class Vue {
   }
 }
 ```
+### 存取器
+支持通过`getters/setters`来拦截对对象的访问，有效的帮助你对对象进行操作。
+```ts
+class Person {
+  firstName: string;
+  lastName: string;
+  get fullName() {
+    return this.firstName + '·' + this.lastName
+  }
+  set fullName(fullName: string) {
+    let strs = fullName.split('·')
+    this.firstName = strs[0]
+    this.lastName = strs[1]
+  }
+}
+const p = new Person()
+p.fullName = '托尼·史塔克'
+console.log(p.fullName)
+```
+### 抽象类abstract
+包含抽象方法（一般没有任何的具体内容），也可以有实例方法和属性，但是不能被实例化，是作为子类的一种规范、约束的类。
+```ts
+abstract class Animal {
+  // 定义两个抽象方法，没有具体内容
+  abstract eat() {}
+  abstract eat() {}
+}
+// 继承抽象类
+class Dog extends Animal {
+  name: string
+  constructor(name: string) {
+    this.name = name
+  }
+  // 子类中必须实现抽象类中的抽象方法
+  eat(food: string) {
+    console.log(`${this.name}爱吃${food}`)
+  }
+  run(distance: number) {
+    console.log(`${this.name}跑了${distance}米`)
+  }
+}
+// new Animal() 报错
+const dog = new Dog('二哈')
+dog.eat('狗粮')
+dog.run(10)
+```
 ## 泛型
 软件工程中，我们不仅要创建一致的定义良好的API，同时也要考虑可重用性。组件不仅能够支持当前的数据类型，同时也能支持未来的数据类型，这在创建大型系统时为你提供了十分灵活的功能。
+> 在定义函数、接口、类的时候不能预先确定要使用的数据的类型，而是在使用函数、接口、类的时候才能确定数据的类型
 ### 什么是泛型
 > 思考：如果有一个函数，函数会返回任何传入它的值，该怎么办呢？
 ```ts
@@ -642,7 +706,8 @@ let output = identity("myString");  // type of output will be 'string'
 ```
 ::: tip 注意：
 ① `T`泛型变量，是一个变量，不是固定的都是`T`，你也可以使用别的字母代替，如`I`、`i`、`U`等。<br>
-② `<T>`是定义（带尖括号），`T`是使用（不带尖括号）。
+② `<T>`是定义（带尖括号），`T`是使用（不带尖括号）。<br>
+③ 可以有多个泛型变量。
 :::
 ### 泛型函数
 编译器要求你在函数体必须正确的使用这个通用的类型。换句话说，你必须把这些参数当做是任意或所有类型。

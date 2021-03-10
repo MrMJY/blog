@@ -272,7 +272,15 @@ $ git branch
 
 `git push origin --delete <branch>`删除origin远程仓库的branch分支
 
+### 合并分支
 
+`git merge <branch>`首先切换分支到目标分支上，然后执行命令（`<branch>`是被合并的分支）
+> `git merge`默认使用`fast-forward`模式进行合并，即直接使用被合并分支的最后一次提交记录
+
+`git merge --no-ff <branch>`与上述命令基本相同，区别在于不使用`fast-forward`模式进行合并，而是创建一个新的提交记录
+
+`git merge --squash <branch>`本命令是从当前分支和`<branch>`的共同祖先节点开始，一直到`<branch>`的顶部节点将会压缩成一个新的节点。
+> 对于将业务功能开发完毕，需要发布测试、上线合并时特别有用，他会是目标分支的提交记录特别清爽，不会将开发过程中的无用节点合并到测试、线上分支。
 
 ## 分支开发工作流
 

@@ -64,6 +64,14 @@ module.exports = {
           ]
         },
         {
+          title: 'TypeScript',
+          collabsable: true,
+          children: [
+            ['/start/js/typescript', '基本语法'],
+            ['/start/js/project+ts', '框架中使用TypeScript']
+          ]
+        },
+        {
           title: '网络协议',
           collabsable: true,
           children: [
@@ -83,11 +91,10 @@ module.exports = {
           ]
         },
         {
-          title: 'TypeScript',
+          title: '框架',
           collabsable: true,
           children: [
-            ['/start/js/typescript', '基本语法'],
-            ['/start/js/project+ts', '框架中使用TypeScript']
+            ['/start/framework/Vue3', 'Vue3']
           ]
         },
         {
