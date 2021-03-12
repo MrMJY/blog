@@ -9,7 +9,7 @@ module.exports = {
     // HOME页logo
     // logo: '/img/logo.jpg',
     // 最新更新时间
-    lastUpdated: 'Last Updated', // string | boolean
+    lastUpdated: '上次更新：', // string | boolean
     // 默认值是 true 。设置为 false 来禁用所有页面的 下一篇 链接
     // nextLinks: true,
     // 默认值是 true 。设置为 false 来禁用所有页面的 上一篇 链接
