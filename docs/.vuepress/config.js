@@ -104,7 +104,8 @@ module.exports = {
             ['/start/project/jenkins', 'Jenkins'],
             ['/start/project/git', 'Git'],
             ['/start/project/webpack', 'Webpack4.x'],
-            ['/start/project/gulp', 'Gulp4.x']
+            ['/start/project/gulp', 'Gulp4.x'],
+            ['/start/project/mock', 'Mock'],
           ]
         }
       ],
