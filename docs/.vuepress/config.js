@@ -106,6 +106,7 @@ module.exports = {
             ['/start/project/webpack', 'Webpack4.x'],
             ['/start/project/gulp', 'Gulp4.x'],
             ['/start/project/mock', 'Mock'],
+            ['/start/project/nginx', 'Nginx'],
           ]
         }
       ],
