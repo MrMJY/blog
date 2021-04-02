@@ -1,5 +1,5 @@
 ## Webpack是什么？
-![Webpack](./img/webpack.png)
+![Webpack](http://www.mjy-blog.cn/blog-assets/webpack.png)
 webpack 是一个现代 JavaScript 应用程序的静态模块打包器(module bundler)。当 webpack 处理应用程序时，它会递归地构建一个依赖关系图(dependency graph)，其中包含应用程序需要的每个模块，然后将所有这些模块打包成一个或多个 bundle。
 
 Webpack 可以看做是模块打包工具：它做的事情是，分析你的项目结构，找到JavaScript模块以及其他的一些浏览器不能直接运行的拓展语言（SCSS、TypeScript等等），并将其打包为合适的格式以供浏览器使用。
@@ -43,7 +43,7 @@ webpack会自动寻找根目录下的 webpack.config.js 配置文件，以这个
 > 之所以导出一个函数，是因为可能项目存在多个环境（开发dev、测试test、预发prev、部署build）等，不同的环境需要进行不同的配置，通过函数的方式可以接收一些自定义的参数，然后根据这些参数进行不同的配置。
 
 **具体的传入自定义变量的方式**
-![environment](./img/webpack-env.png)
+![environment](http://www.mjy-blog.cn/blog-assets/webpack-env.png)
 
 ### Entry
 入口可以是单入口，也可以是多入口
@@ -82,7 +82,7 @@ webpack会自动寻找根目录下的 webpack.config.js 配置文件，以这个
 > + 注意此选项被称为文件名，但是你还是可以使用像 "js/[name]/bundle.js" 这样的文件夹结构
 > + [hash] 和 [chunkhash] 的长度可以使用 [hash:16]、[hash:8]（默认为20）来指定。或者，通过指定output.hashDigestLength 在全局配置长度。
 
-![filename](./img/webpack-output-filename.png)
+![filename](http://www.mjy-blog.cn/blog-assets/webpack-output-filename.png)
 
 #### path
 构建后资源输出的目录，必须是**绝对路径**
@@ -311,7 +311,7 @@ css-loader 解释 @import 和 url() ，会在 import/require() 后再解析它�
 ```
 **[选项](https://www.webpackjs.com/loaders/style-loader/#选项)**
 
-![style-loader-options](./img/style-loader-options.png)
+![style-loader-options](http://www.mjy-blog.cn/blog-assets/style-loader-options.png)
 
 #### less-loader
 将`Less`文件编译成`Css`，先使用`less-loader`转换为`css`，再用`css-loader、style-loader`

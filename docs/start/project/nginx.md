@@ -1,4 +1,4 @@
-<img src="./img/nginx.png" style="display: block; width: 350px; margin-left: auto; margin-right: auto;">
+<img src="http://www.mjy-blog.cn/blog-assets/nginx.png" style="display: block; width: 350px; margin-left: auto; margin-right: auto;">
 
 ## 简介
 `Nginx`是由俄罗斯人`Igor Sysoev`编写的十分轻量级的`HTTP`服务器，是一个高性能的`HTTP`和反向代理服务器，同时也是一个`IMAP/POP3/SMTP`代理服务器。
@@ -17,15 +17,15 @@
 `Nginx`专为性能优化而开发，性能是其最重要的考量,实现上非常注重效率。它支持内核`Poll`模型，能经受高负载的考验,有报告表明能支持高达`50,000`个并发连接数。
 ## 相关概念
 ### 正向代理
-![正向代理](./img/forward-proxy.png)
+![正向代理](http://www.mjy-blog.cn/blog-assets/forward-proxy.png)
 
 在客户端（浏览器）配置代理服务器，通过代理服务器进行对目标服务器的访问（翻墙）。
 ### 反向代理
-<img src="./img/reverse-proxy.png" style="display: block; width: 446px; margin-left: auto; margin-right: auto;">
+<img src="http://www.mjy-blog.cn/blog-assets/reverse-proxy.png" style="display: block; width: 446px; margin-left: auto; margin-right: auto;">
 
 反向代理隐藏了真实的服务端，当我们向一个服务发送请求时，用户是无感知的，而这个反向代理服务器会将请求转发到真是的原始服务器，将返回结果返回给用户。
 ### [负载均衡](https://www.zhihu.com/question/61783920)
-![LoadBalance](./img/load-balance.png)
+![LoadBalance](http://www.mjy-blog.cn/blog-assets/load-balance.png)
 
 **负载均衡**(**LoadBalance**)是一种优化资源利用率技术，用来在多个计算机、网络连接、CPU、磁盘驱动器或其他资源中分配负载，以达到最大化吞吐率、最小化响应时间、同时避免过载的目的。
 
@@ -33,7 +33,7 @@
 
 那么，在网络世界中，这些服务点就相当于服务器，而那个所谓的引导者就相当于负载均衡了。
 ### 动静分离
-![Dynamic and static separation](./img/Dynamic-and-static-separation.png)
+![Dynamic and static separation](http://www.mjy-blog.cn/blog-assets/Dynamic-and-static-separation.png)
 将`Web`应用程序中静态和动态的内容分别放在不同的`Web`服务器上，有针对性的处理动态和静态内容，从而达到性能的提升。
 + 静态文件：如`css`、`html`、`jpg`、`js`等文件
 + 动态文件：如`jsp`、`.do`、`asp`等文件
@@ -127,7 +127,7 @@ http {
 + [`nginx`服务的基本配置](https://blog.csdn.net/weixin_42167759/article/details/85049546)
 ## 高可用集群
 下面使用两台`Nginx`做反向代理、负载均衡服务器，当其中一台`Nginx`宕机之后，仍能用另一台来工作，两台`Nginx`之间用`keeplived`来监测心跳。
-![高可用](./img/high-availability.gif)
+![高可用](http://www.mjy-blog.cn/blog-assets/high-availability.gif)
 ### Keepalived介绍
 `Keepalived`是一个基于`VRRP`协议来实现的服务高可用方案，可以利用其来避免`IP`单点故障，但是它一般不会单独出现，而是与其它负载均衡技术（如nginx、lvs、haproxy）一起工作来达到集群的高可用。
 

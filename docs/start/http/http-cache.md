@@ -25,7 +25,7 @@
 
 如果缓存中没有可用的副本或者副本已经过期，则会将请求转发至原始服务器，这被称作缓存未命中 。
 
-![缓存命中/缓存未命中](./img/cache1.png)
+![缓存命中/缓存未命中](http://www.mjy-blog.cn/blog-assets/cache1.png)
 
 **新鲜度检测**
 
@@ -41,7 +41,7 @@ HTTP通过缓存将服务器文档的副本保留一段时间。在这段时间�
 
 缓存对缓存的副本进行再验证时，会向原始服务器发送一个再验证请求，如果内容没有发生变化，服务器会以304 Not Modified进行响应。这被称作是再验证命中或者缓慢命中。如果内容发生了变化，服务器会以200进行响应。这被称作再验证未命中。
 
-![](./img/cache2.png)
+![](http://www.mjy-blog.cn/blog-assets/cache2.png)
 
 ## 缓存的处理步骤
 
@@ -49,17 +49,17 @@ HTTP通过缓存将服务器文档的副本保留一段时间。在这段时间�
 + 如果有缓存，则会进入强缓存的范畴，判断缓存是否新鲜，如果缓存新鲜，则会直接返回缓存副本给客户端。如果缓存不新鲜了，则表示强缓存失败，将会进入到协商缓存。
 + 协商缓存将判断是否存在Etag和Last-Modified首部，通过这些首部验证资源是否发生过变化，如果未发生变化，则表示命中了协商缓存，会重定向到缓存副本，将资源返回给客户端，否则的话表示协商缓存未命中，服务器会返回新的资源。
 
-![](./img/cache3.png)
+![](http://www.mjy-blog.cn/blog-assets/cache3.png)
 
 **强缓存**
 
-![](./img/cache4.png)
+![](http://www.mjy-blog.cn/blog-assets/cache4.png)
 
 首次发起请求时，服务端会在Response Headers 中写入缓存新鲜时间。当请求再次发出时，如果缓存新鲜，将直接从缓存获取资源，而不会再与服务器发生通信。
 
 **协商缓存**
 
-![](./img/cache5.png)
+![](http://www.mjy-blog.cn/blog-assets/cache5.png)
 
 协商缓存机制下，浏览器需要向服务器去询问缓存的相关信息，进而判断是重新发起请求、下载完整的响应，还是从本地获取缓存的资源。
 
@@ -91,7 +91,7 @@ Cache-Control: max-age=31536000
 + 当我们首次请求资源时，服务器在返回资源的同时，会在Response Headers中写入`expires`首部或`cache-control`，标识缓存的过期时间，缓存副本会将该部分信息保存起来。
 + 当再次请求该资源的时候，缓存会对`date`(date 是一个通用首部，表示原始服务器消息发出的时间。即表示的是首次请求某个资源的时间。)和`expires/cache-control`的时间进行对比，从而判断缓存副本是否足够新鲜。
 
-![](./img/cache6.png)
+![](http://www.mjy-blog.cn/blog-assets/cache6.png)
 
 ### 协商缓存实现原理
 协商缓存是通过请求头`Last-Modified`或`Etag`来实现的。
@@ -106,9 +106,9 @@ Last-Modified 标识的是文档最后修改时间，Etag 则是以文档内容�
 + 当再次请求该资源时，会在`Request Headers` 中写入`If-Modified-Since`首部，此时的`If-Modified-Since`的值是首次请求资源时所返回的`Last-Modified`的值。
 + 服务器接收到请求后，会根据`If-Modified-Since`的值判断资源在该日期之后是否发生过变化。
 + 如果没有，则会返回304 Not Modified; 如果变化了，则会返回变化过后的资源，**同时更新**`Last-Modified`的值。
-![](./img/cache7.png)
+![](http://www.mjy-blog.cn/blog-assets/cache7.png)
 
-![](./img/cache8.png)
+![](http://www.mjy-blog.cn/blog-assets/cache8.png)
 
 **Etag**
 ![](https://user-gold-cdn.xitu.io/2018/11/4/166de24605025515?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)

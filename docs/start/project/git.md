@@ -286,11 +286,11 @@ $ git branch
 
 ### 长期分支
 
-![长期分支](./img/long-branch.png)
+![长期分支](http://www.mjy-blog.cn/blog-assets/long-branch.png)
 
 ### 主题分支
 
-![主题分支](./img/theme-branch.png)
+![主题分支](http://www.mjy-blog.cn/blog-assets/theme-branch.png)
 
 
 
@@ -327,7 +327,7 @@ $ git merge experiment
 
 ### 高级使用
 
-![变基高级使用](./img/rebase.png)
+![变基高级使用](http://www.mjy-blog.cn/blog-assets/rebase.png)
 
 你希望将 client 中的修改合并到主分支并发布，但暂时并不想合并 server 中的修改，因为它们还需要
 经过更全面的测试

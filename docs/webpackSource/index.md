@@ -14,7 +14,7 @@
 
 ### 抽象语法树定义
 抽象语法树(AST)都是通过**JavaScript Parser**转化而来，这棵树定义了代码的结构，通过操作这棵树，我们可以精准的定位到声明语句、赋值语句、运算语句等，实现对代码的分析、优化、变更等操作。
-![AST](./img/AST.jpg)
+![AST](http://www.mjy-blog.cn/blog-assets/AST.jpg)
 
 ### JavaScript Parser
 + **JavaScript Parser**是可以把js源码转化为抽象语法树的解析器。
@@ -161,7 +161,7 @@ const {
 const hook = new SyncHook(["arg1", "arg2", "arg3"]);
 ```
 常用的钩子主要包含以下几种，分为**同步**和**异步**，异步又分为**并发执行**和**串行执行**
-![hooks一览](./img/tapable-hooks.png)
+![hooks一览](http://www.mjy-blog.cn/blog-assets/tapable-hooks.png)
 
 |钩子名称|执行方式|说明|
 |---|---|---|---|

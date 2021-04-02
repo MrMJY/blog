@@ -1,5 +1,5 @@
 ## 简介
-![gulp](./img/gulp.gif)
+![gulp](http://www.mjy-blog.cn/blog-assets/gulp.gif)
 
 `Gulp.js`是一个自动化构建工具，开发者可以使用它在项目开发过程中自动执行常见任务。`Gulp.js`是基于`Node.js`构建的，利用`Node.js`流的威力，你可以快速构建项目并减少频繁的`IO`操作。`Gulp.js`源文件和你用来定义任务的`Gulp`文件都是通过 `JavaScript`（或者`CoffeeScript`）源码来实现的。
 ## Gulp和Webpack的区别

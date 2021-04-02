@@ -1,4 +1,4 @@
-<img src="./img/vite.svg" style="display: block; width: 30%; margin-left: auto; margin-right: auto;">
+<img src="http://www.mjy-blog.cn/blog-assets/vite.svg" style="display: block; width: 30%; margin-left: auto; margin-right: auto;">
 
 ## 简介
 Vite(法语单词“fast”，发音为`/vit/`)是一种构建工具，旨在为现代Web项目提供更快，更精简的开发体验。它包括两个主要部分：
@@ -73,7 +73,7 @@ Vite将预编译的依赖项缓存在`node_modules/.vite`中。它根据以下�
 ### 导入静态资源作为URL
 导入静态资源后，将返回解析后的URL：
 ```js
-import imgUrl from './img.png'
+import imgUrl from 'http://www.mjy-blog.cn/blog-assets.png'
 document.getElementById('hero-img').src = imgUrl
 ```
 例如，`imgUrl`在开发过程中将为`/img.png`，在生产版本中成为`/assets/img.2d8efhg.png`。

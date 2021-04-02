@@ -1,11 +1,11 @@
 ## 如何用 jenkins 构建部署项目
-![Jenkins](./img/Jenkins.png)
+![Jenkins](http://www.mjy-blog.cn/blog-assets/Jenkins.png)
 
 ::: tip What is Jenkins?
 Jenkins是开源 CI（Continuous Integration：持续集成）&CD（Continuous Delivery：持续交付） 软件领导者， 提供超过1000个插件来支持构建、部署、自动化， 满足任何项目的需要，支持各种运行方式，可通过系统包, Docker 或者通过一个独立的 Java 程序。
 :::
 ### 示意图
-![CI&CD](./img/CI&CD.png)
+![CI&CD](http://www.mjy-blog.cn/blog-assets/CI&CD.png)
 
 ### 为什么选择 Jenkins
 + <b>持续集成和持续交付：</b>作为一个可扩展的自动化服务器，Jenkins可以用作简单的CI服务器，或者变成任何项目的连续交付中心。
@@ -160,7 +160,7 @@ WantedBy=multi-user.target
 + [Jenkins插件源使用国内镜像中心的最新方法](https://blog.csdn.net/weixin_40046357/article/details/104489497)
 + [更改插件源为国内源](https://www.cnblogs.com/poloyy/p/12785401.html)
 ### 安装常用(默认)插件
-![默认插件](./img/default-plugin.png)
+![默认插件](http://www.mjy-blog.cn/blog-assets/default-plugin.png)
 + 汉化插件 **Localization: Chinese (Simplified)**
 + 参数化构建 **Git Parameter Plug-In**
 + 安装**Node Plugin**(起到Jenkins与Node环境之间的连接作用)
@@ -184,30 +184,30 @@ export PATH=$NODE_HOME/bin:$PATH
 + 安装**Node Plugin**(起到Jenkins与Node环境之间的连接作用)
 + 在Jenkins中配置Node路径
   + 系统管理 -> 全局工具配置 -> NodeJS
-  ![配置node路径](./img/configNodejs.png)
+  ![配置node路径](http://www.mjy-blog.cn/blog-assets/configNodejs.png)
 
 不同的系统安装软件的方式可能不同，根据自己的实际情况选择一种安装方式。例如：apt-get、wget
 
 ### 创建任务
-![创建自定义任务](./img/createjob.png)
+![创建自定义任务](http://www.mjy-blog.cn/blog-assets/createjob.png)
 ### 配置任务
-![配置任务](./img/configjob.png)
+![配置任务](http://www.mjy-blog.cn/blog-assets/configjob.png)
 ### 与GitHub结合实现push自动构建
 + 在GitHub上申请[Personal access tokens](https://github.com/settings/tokens)
   + 选择token权限
-  ![获取Personal access tokens](./img/token.png)
+  ![获取Personal access tokens](http://www.mjy-blog.cn/blog-assets/token.png)
 + 设置项目的webhook，在项目的settings中
-  ![创建webhook](./img/webhook.png)
+  ![创建webhook](http://www.mjy-blog.cn/blog-assets/webhook.png)
 + 设置jenkins监听webhook的请求
   + 系统管理 -> 系统配置 -> GitHub 修改 保存
-  ![jenkins配置](./img/jenkins-conf.png)
+  ![jenkins配置](http://www.mjy-blog.cn/blog-assets/jenkins-conf.png)
   + 修改任务配置
-  ![修改任务配置](./img/build.png)
+  ![修改任务配置](http://www.mjy-blog.cn/blog-assets/build.png)
 
 ### 踩到的坑
 + webhook发送的请求始终失败
   + 解决方法：
-  ![重置hook](./img/issue1.png)
+  ![重置hook](http://www.mjy-blog.cn/blog-assets/issue1.png)
 
 ### 参数化构建
 未完待续。。。
