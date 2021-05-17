@@ -917,10 +917,10 @@ const webpackConfig = {
 }
 ```
 
-## 代码分割
-此功能使您可以将代码分成多个`bundle`，然后**按需**或**并行**加载。它可用于实现较小的捆绑包并控制资源负载优先级，如果正确使用，则会对负载时间产生重大影响。
-
+## SplitChunks
 > `webpack4.x`已经将`CommonsChunkPlugin`移除，使用`SplitChunksPlugin`替代。
+
+`SplitChunks`插件是什么呢，简单的来说就是`Webpack`中一个提取或分离代码的插件，主要作用是提取公共代码，防止代码被重复打包，拆分过大的js文件，合并零散的js文件。
 
 共有三种通用的代码拆分方法：
 + 入口点：使用`entry`配置手动拆分代码

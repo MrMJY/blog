@@ -27,11 +27,11 @@ module.exports = {
       },
       {
         text: '笔记',
-        link: '/start/'
+        link: '/start/html/'
       },
       {
         text: '面试题',
-        link: '/interviewQuestions/'
+        link: '/interviewQuestions/JS/'
       }
     ],
     // 侧边栏
@@ -156,6 +156,11 @@ module.exports = {
             ['/webpackSource/source/plugins', '内置插件'],
             ['/webpackSource/source/moduleFactory', 'ModuleFactory'],
           ]
+        },
+        {
+          title: "优化",
+          collabsable: true,
+          path: '/webpackSource/optimization'
         },
       ]
     }
