@@ -155,6 +155,7 @@ module.exports = {
             ['/webpackSource/source/webpack', 'Webpack'],
             ['/webpackSource/source/plugins', '内置插件'],
             ['/webpackSource/source/moduleFactory', 'ModuleFactory'],
+            ['/webpackSource/source/module', 'Module'],
           ]
         },
         {

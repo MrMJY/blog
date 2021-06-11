@@ -1,5 +1,5 @@
 ## webpack函数
-定义在`webpack/lib/webpack.js`中
+定义在`webpack/lib/webpack.js`中，下面粘贴的代码不是源码，是`node_modules`中的，源码代码与下面的代码有部分不同。下面的代码更符合实际构建
 ```js
 const webpack = (options, callback) => {
   // 校验配置参数是否合法
@@ -365,6 +365,17 @@ class Compiler extends Tapable {
 `compiler`负责整个编译的宏观流程（通过`hooks`可以看出来），但是不具体的去处理资源。
 ## Compilation类
 定义在`webpack/lib/Compilation.js:243`
+
+`compilation`是真实的负责构建编译资源的
++ 第一步：添加编译的入口，通过`make`事件，调用`SingleEntryPlugin/MultiEntryPlugin`插件，调用`addEntry()`。
+	+ `addEntry()`内部实际调用的是`_addModuleChain()`
++ 第二步：根据模块类型获得模块的工厂函数，通过工厂函数创建`Module`(`moduleFactory.create()`)
++ 第三步：构建这个模块。`module.build()`
++ 第四步：构建完成后，执行`afterBuild()`
+	+ 判断这个`module`是否依赖其他模块，如果有则调用`processModuleDependencies(module)`
+	+ `processModuleDependencies`则链式(递归)添加模块依赖`addModuleDependencies`
+	+ 添加完成后，重复第四、五步
++ 第六步：`seal()`进行封装
 ```js
 class Compilation extends Tapable {
 	constructor(compiler) {
@@ -542,7 +553,8 @@ class Compilation extends Tapable {
 		}
 		// semaphore模拟一个队列，队列长度默认100
 		this.semaphore.acquire(() => {
-			// 通过模块工厂函数创建Module
+			// 通过模块工厂的create方法创建模块
+			// create方法内部创建时会使用process.nextTick()，是一个异步操作
 			moduleFactory.create(
 				{
 					contextInfo: {
@@ -565,20 +577,19 @@ class Compilation extends Tapable {
 						currentProfile.factory = afterFactory - start;
 					}
 					// addModule：
-					// 1. 判断这个module是否被缓存了，如果缓存了，则直接读取缓存结果，没有的话缓存
+					// 1. 判断这个module是否被缓存了，如果缓存了，则直接读取缓存结果，没有的话缓存（this._modules、this.modules）
 					// 2. 如果是缓存过的则将进行判断是否要rebuild
-					// 从此可以看出：一个文件就是一个Module，一个Module可以有多个依赖
 					const addModuleResult = this.addModule(module);
 					module = addModuleResult.module;
-					// 将这个Module放入entries中
+					// 将这个 Module 放入 this.entries 中
 					onModule(module);
-					// 依赖是一个模块，module就是指代自己，依赖也有自己的依赖
 					dependency.module = module;
 					module.addReason(null, dependency);
 					// build后的回调函数
 					const afterBuild = () => {
 						// 这个module是否有自己的依赖，有的话递归添加、build
 						if (addModuleResult.dependencies) {
+							// 处理模块的依赖
 							this.processModuleDependencies(module, err => {
 								if (err) return callback(err);
 								callback(null, module);
@@ -619,16 +630,239 @@ class Compilation extends Tapable {
 			);
 		});
 	}
+	// 处理模块的依赖
+	processModuleDependencies(module, callback) {
+		const dependencies = new Map();
+
+		const addDependency = dep => {
+			const resourceIdent = dep.getResourceIdentifier();
+			if (resourceIdent) {
+				// 获取模块的工厂函数
+				const factory = this.dependencyFactories.get(dep.constructor);
+				if (factory === undefined) {
+					throw new Error(
+						`No module factory available for dependency type: ${dep.constructor.name}`
+					);
+				}
+				let innerMap = dependencies.get(factory);
+				if (innerMap === undefined) {
+					dependencies.set(factory, (innerMap = new Map()));
+				}
+				let list = innerMap.get(resourceIdent);
+				if (list === undefined) innerMap.set(resourceIdent, (list = []));
+				list.push(dep);
+			}
+		};
+		// 通过分析AST，收集依赖
+		const addDependenciesBlock = block => {
+			// 依赖项
+			if (block.dependencies) {
+				iterationOfArrayCallback(block.dependencies, addDependency);
+			}
+			// 代码块
+			if (block.blocks) {
+				iterationOfArrayCallback(block.blocks, addDependenciesBlock);
+			}
+			// 变量
+			if (block.variables) {
+				iterationBlockVariable(block.variables, addDependency);
+			}
+		};
+
+		try {
+			addDependenciesBlock(module);
+		} catch (e) {
+			callback(e);
+		}
+
+		const sortedDependencies = [];
+		// 将双层的Map结构转换成一层的平铺列表结构
+		for (const pair1 of dependencies) {
+			for (const pair2 of pair1[1]) {
+				sortedDependencies.push({
+					factory: pair1[0],
+					dependencies: pair2[1]
+				});
+			}
+		}
+		// 给模块添加依赖
+		this.addModuleDependencies(
+			module,
+			sortedDependencies,
+			this.bail,
+			null,
+			true,
+			callback
+		);
+	}
+
+	addModuleDependencies(
+		module,
+		dependencies,
+		bail,
+		cacheGroup,
+		recursive,
+		callback
+	) {
+		const start = this.profile && Date.now();
+		const currentProfile = this.profile && {};
+		// 循环处理依赖
+		asyncLib.forEach(
+			dependencies,
+			(item, callback) => {
+				const dependencies = item.dependencies;
+				// 错误回调
+				const errorAndCallback = err => {
+					err.origin = module;
+					err.dependencies = dependencies;
+					this.errors.push(err);
+					if (bail) {
+						callback(err);
+					} else {
+						callback();
+					}
+				};
+				// 警告回调
+				const warningAndCallback = err => {
+					err.origin = module;
+					this.warnings.push(err);
+					callback();
+				};
+
+				const semaphore = this.semaphore;
+				// 同步循环执行 factory.create 异步调用 factory.create 的回调函数
+				semaphore.acquire(() => {
+					// 获得依赖的模块工厂函数
+					const factory = item.factory;
+					// 创建模块
+					factory.create(
+						{
+							contextInfo: {
+								issuer: module.nameForCondition && module.nameForCondition(),
+								compiler: this.compiler.name
+							},
+							resolveOptions: module.resolveOptions,
+							context: module.context,
+							dependencies: dependencies
+						},
+						(err, dependentModule) => {
+							let afterFactory;
+							// log输出级别，error才输出、warning输出
+							const isOptional = () => {
+								return dependencies.every(d => d.optional);
+							};
+							// 错误警告回调
+							const errorOrWarningAndCallback = err => {
+								if (isOptional()) {
+									return warningAndCallback(err);
+								} else {
+									return errorAndCallback(err);
+								}
+							};
+
+							if (err) {
+								semaphore.release();
+								return errorOrWarningAndCallback(
+									new ModuleNotFoundError(module, err)
+								);
+							}
+							if (!dependentModule) {
+								semaphore.release();
+								return process.nextTick(callback);
+							}
+							if (currentProfile) {
+								afterFactory = Date.now();
+								currentProfile.factory = afterFactory - start;
+							}
+
+							const iterationDependencies = depend => {
+								for (let index = 0; index < depend.length; index++) {
+									const dep = depend[index];
+									dep.module = dependentModule;
+									dependentModule.addReason(module, dep);
+								}
+							};
+							// 缓存module, this._modules this.modules
+							const addModuleResult = this.addModule(
+								dependentModule,
+								cacheGroup
+							);
+							dependentModule = addModuleResult.module;
+							iterationDependencies(dependencies);
+
+							const afterBuild = () => {
+								if (recursive && addModuleResult.dependencies) {
+									this.processModuleDependencies(dependentModule, callback);
+								} else {
+									return callback();
+								}
+							};
+
+							if (addModuleResult.issuer) {
+								if (currentProfile) {
+									dependentModule.profile = currentProfile;
+								}
+
+								dependentModule.issuer = module;
+							} else {
+								if (this.profile) {
+									if (module.profile) {
+										const time = Date.now() - start;
+										if (
+											!module.profile.dependencies ||
+											time > module.profile.dependencies
+										) {
+											module.profile.dependencies = time;
+										}
+									}
+								}
+							}
+
+							if (addModuleResult.build) {
+								this.buildModule(
+									dependentModule,
+									isOptional(),
+									module,
+									dependencies,
+									err => {
+										if (err) {
+											semaphore.release();
+											return errorOrWarningAndCallback(err);
+										}
+
+										if (currentProfile) {
+											const afterBuilding = Date.now();
+											currentProfile.building = afterBuilding - afterFactory;
+										}
+
+										semaphore.release();
+										afterBuild();
+									}
+								);
+							} else {
+								semaphore.release();
+								this.waitForBuildingFinished(dependentModule, afterBuild);
+							}
+						}
+					);
+				});
+			},
+			err => {
+				// In V8, the Error objects keep a reference to the functions on the stack. These warnings &
+				// errors are created inside closures that keep a reference to the Compilation, so errors are
+				// leaking the Compilation object.
+				// 在 V8 中，Error 对象保持对堆栈中函数的引用。
+				// 这些警告和错误是在保留对 Compilation 的引用的闭包中创建的，因此错误透传到 Compilation 对象。
+
+				if (err) {
+					// eslint-disable-next-line no-self-assign
+					err.stack = err.stack;
+					return callback(err);
+				}
+
+				return process.nextTick(callback);
+			}
+		);
+	}
 }
 ```
-`compilation`是真实的负责构建编译资源的（通过`hooks`可以看出来）。
-+ 第一步：添加编译的入口，通过`make`事件，调用`SingleEntryPlugin/MultiEntryPlugin`插件，调用`addEntry()`。
-	+ `addEntry()`内部实际调用的是`_addModuleChain()`
-+ 第二步：根据模块类型获得模块的工厂函数，通过工厂函数创建`Module`(`moduleFactory.create()`)
-+ 第三步：创建`module`后，将`module`挂载到`compilation`上（`modules`、`entries`）
-+ 第四步：构建这个模块。`buildModule(module)`
-+ 第五步：构建完成后，执行`afterBuild()`
-	+ 判断这个`module`是否依赖其他模块，如果有则调用`processModuleDependencies(module)`
-	+ `processModuleDependencies`则链式(递归)添加模块依赖`addModuleDependencies`
-	+ 添加完成后，重复第四、五步
-+ 第六步：`seal()`进行封装

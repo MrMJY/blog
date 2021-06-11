@@ -172,5 +172,6 @@ module.exports = {
   ]
 }
 ```
+### [SplitChunks](http://www.mjy-blog.cn/start/project/webpack.html#splitchunks)
 ## 相关文章
 + [使用 Preload&Prefetch 优化前端页面的资源加载](https://blog.csdn.net/vivo_tech/article/details/109485871)

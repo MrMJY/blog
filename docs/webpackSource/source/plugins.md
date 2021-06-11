@@ -56,9 +56,11 @@ class SingleEntryPlugin {
   // 安装插件
   apply(compiler) {
 		// 给 compiler 的 compilation 钩子注册事件
+		// 在Compiler.js中的newCompilation方法中触发
 		compiler.hooks.compilation.tap(
 			"SingleEntryPlugin",
 			(compilation, { normalModuleFactory }) => {
+				// 添加依赖构造函数类型
 				compilation.dependencyFactories.set(
 					SingleEntryDependency,
 					normalModuleFactory
