@@ -18,15 +18,15 @@ class NormalModule extends Module {
 		super(type, getContext(resource));
 
 		// Info from Factory
-		this.request = request;
-		this.userRequest = userRequest;
-		this.rawRequest = rawRequest;
+		this.request = request; // 完整的路径，包含loaders
+		this.userRequest = userRequest; // 源码路径（不包含loaders）
+		this.rawRequest = rawRequest;	// 源码路径（不包含loaders）
 		this.binary = type.startsWith("webassembly");
-		this.parser = parser;
-		this.generator = generator;
-		this.resource = resource;
+		this.parser = parser;	// 源码AST的parser
+		this.generator = generator; // 还原成代码的generator
+		this.resource = resource; // 源码路径
 		this.matchResource = matchResource;
-		this.loaders = loaders;
+		this.loaders = loaders; // 需要的loaders
 		if (resolveOptions !== undefined) this.resolveOptions = resolveOptions;
 
 		// Info from Build
@@ -46,7 +46,7 @@ class NormalModule extends Module {
 		// Cache
 		this._lastSuccessfulBuildMeta = {};
 	}
-  // 对模块进行build
+  // 对模块进行build（宏观上）
   build(options, compilation, resolver, fs, callback) {
 		this.buildTimestamp = Date.now();
 		this.built = true;
@@ -65,7 +65,7 @@ class NormalModule extends Module {
 			assets: undefined,
 			assetsInfo: undefined
 		};
-    // doBuild
+		// doBuild（具体的build）
 		return this.doBuild(options, compilation, resolver, fs, err => {
 			this._cachedSources.clear();
 
@@ -76,14 +76,13 @@ class NormalModule extends Module {
 				return callback();
 			}
 
-			// check if this module should !not! be parsed.
-			// if so, exit here;
+			// 检查模块是否需要构建，如果是noParse则退出
 			const noParseRule = options.module && options.module.noParse;
 			if (this.shouldPreventParsing(noParseRule, this.request)) {
 				this._initBuildHash(compilation);
 				return callback();
 			}
-
+			// parse错误回调
 			const handleParseError = e => {
 				const source = this._source.source();
 				const loaders = this.loaders.map(item =>
@@ -94,14 +93,16 @@ class NormalModule extends Module {
 				this._initBuildHash(compilation);
 				return callback();
 			};
-
+			// parse成功回调
 			const handleParseResult = result => {
 				this._lastSuccessfulBuildMeta = this.buildMeta;
+				// 创建hash
 				this._initBuildHash(compilation);
 				return callback();
 			};
 
 			try {
+				// 将源码解析成AST
 				const result = this.parser.parse(
 					this._ast || this._source.source(),
 					{
@@ -129,14 +130,14 @@ class NormalModule extends Module {
 	}
   // 加载loader、通过fs加载module
   doBuild(options, compilation, resolver, fs, callback) {
-    // 创建 loaderContext
+		// 创建 loaderContext
 		const loaderContext = this.createLoaderContext(
 			resolver,
 			options,
 			compilation,
 			fs
 		);
-    // 执行 runLoaders 读取文件
+		// 执行 runLoaders 加载loader，使用loader解析源文件
 		runLoaders(
 			{
 				resource: this.resource,
@@ -145,7 +146,7 @@ class NormalModule extends Module {
 				readResource: fs.readFile.bind(fs)
 			},
 			(err, result) => {
-        // 获得读取到的文件内容
+				// 获得经过loader解析后的文件内容
 				if (result) {
 					this.buildInfo.cacheable = result.cacheable;
 					this.buildInfo.fileDependencies = new Set(result.fileDependencies);
@@ -168,10 +169,11 @@ class NormalModule extends Module {
 					});
 					return callback(error);
 				}
-        // 读取的buffer形式文件内容
+				// 读取的buffer形式文件内容
 				const resourceBuffer = result.resourceBuffer;
-        // utf-8格式的文件内容
+				// utf-8格式的文件内容
 				const source = result.result[0];
+				// sourceMap文件
 				const sourceMap = result.result.length >= 1 ? result.result[1] : null;
 				const extraInfo = result.result.length >= 2 ? result.result[2] : null;
 
@@ -189,7 +191,7 @@ class NormalModule extends Module {
 					const error = new ModuleBuildError(this, err);
 					return callback(error);
 				}
-        // 把读取到的内容保存到this._source中
+				// 把读取到的内容保存到this._source中
 				this._source = this.createSource(
 					this.binary ? asBuffer(source) : asString(source),
 					resourceBuffer,

@@ -191,7 +191,7 @@ class NormalModuleFactory extends Tapable {
 			// 先加载loader，然后加载真正文件
 			asyncLib.parallel(
 				[
-					// 加载需要的loader
+					// 加载路径上的loader
 					callback =>
 						this.resolveRequestArray(
 							contextInfo,
@@ -272,7 +272,7 @@ class NormalModuleFactory extends Tapable {
 						resourceQuery = resourcePath.substr(queryIndex);
 						resourcePath = resourcePath.substr(0, queryIndex);
 					}
-					// 获得loader配置
+					// 获得默认的和配置中的 loader 配置
 					const result = this.ruleSet.exec({
 						resource: resourcePath,
 						realResource:
@@ -347,13 +347,14 @@ class NormalModuleFactory extends Tapable {
 							)
 						],
 						(err, results) => {
-							// 获得加载的 loaders
+							// 获得所有的 loaders
 							if (err) return callback(err);
 							if (matchResource === undefined) {
 								loaders = results[0].concat(loaders, results[1], results[2]);
 							} else {
 								loaders = results[0].concat(results[1], loaders, results[2]);
 							}
+							// 异步加载
 							process.nextTick(() => {
 								const type = settings.type;
 								const resolveOptions = settings.resolve;
@@ -385,7 +386,7 @@ class NormalModuleFactory extends Tapable {
 			);
 		});
 	}
-	// 生成一个创建模块的函数
+	// 创建模块
 	create(data, callback) {
 		const dependencies = data.dependencies;
 		const cacheEntry = dependencyCache.get(dependencies[0]);

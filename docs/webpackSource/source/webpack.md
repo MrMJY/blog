@@ -63,6 +63,7 @@ const webpack = (options, callback) => {
 				: options.watchOptions || {};
 			return compiler.watch(watchOptions, callback);
 		}
+		// 运行compiler
 		compiler.run(callback);
 	}
 	return compiler;
@@ -369,13 +370,13 @@ class Compiler extends Tapable {
 `compilation`是真实的负责构建编译资源的
 + 第一步：添加编译的入口，通过`make`事件，调用`SingleEntryPlugin/MultiEntryPlugin`插件，调用`addEntry()`。
 	+ `addEntry()`内部实际调用的是`_addModuleChain()`
-+ 第二步：根据模块类型获得模块的工厂函数，通过工厂函数创建`Module`(`moduleFactory.create()`)
++ 第二步：根据模块类型获得模块的`Factory`函数，通过`Factory`函数创建`Module`(`moduleFactory.create()`)
 + 第三步：构建这个模块。`module.build()`
 + 第四步：构建完成后，执行`afterBuild()`
-	+ 判断这个`module`是否依赖其他模块，如果有则调用`processModuleDependencies(module)`
+	+ 调用`processModuleDependencies(module)`
 	+ `processModuleDependencies`则链式(递归)添加模块依赖`addModuleDependencies`
 	+ 添加完成后，重复第四、五步
-+ 第六步：`seal()`进行封装
++ 第五步：`seal()`进行封装
 ```js
 class Compilation extends Tapable {
 	constructor(compiler) {
@@ -629,6 +630,72 @@ class Compilation extends Tapable {
 				}
 			);
 		});
+	}
+	// 打包模块
+	buildModule(module, optional, origin, dependencies, thisCallback) {
+		let callbackList = this._buildingModules.get(module);
+		if (callbackList) {
+			callbackList.push(thisCallback);
+			return;
+		}
+		this._buildingModules.set(module, (callbackList = [thisCallback]));
+		// 执行module的callbackList
+		const callback = err => {
+			this._buildingModules.delete(module);
+			for (const cb of callbackList) {
+				cb(err);
+			}
+		};
+
+		this.hooks.buildModule.call(module);
+		// 读取源码AST转换
+		module.build(
+			this.options,
+			this,
+			this.resolverFactory.get("normal", module.resolveOptions),
+			this.inputFileSystem,
+			error => {
+				// 处理errors
+				const errors = module.errors;
+				for (let indexError = 0; indexError < errors.length; indexError++) {
+					const err = errors[indexError];
+					err.origin = origin;
+					err.dependencies = dependencies;
+					if (optional) {
+						this.warnings.push(err);
+					} else {
+						this.errors.push(err);
+					}
+				}
+				// 处理warnings
+				const warnings = module.warnings;
+				for (
+					let indexWarning = 0;
+					indexWarning < warnings.length;
+					indexWarning++
+				) {
+					const war = warnings[indexWarning];
+					war.origin = origin;
+					war.dependencies = dependencies;
+					this.warnings.push(war);
+				}
+				const originalMap = module.dependencies.reduce((map, v, i) => {
+					map.set(v, i);
+					return map;
+				}, new Map());
+				module.dependencies.sort((a, b) => {
+					const cmp = compareLocations(a.loc, b.loc);
+					if (cmp) return cmp;
+					return originalMap.get(a) - originalMap.get(b);
+				});
+				if (error) {
+					this.hooks.failedModule.call(module, error);
+					return callback(error);
+				}
+				this.hooks.succeedModule.call(module);
+				return callback();
+			}
+		);
 	}
 	// 处理模块的依赖
 	processModuleDependencies(module, callback) {
