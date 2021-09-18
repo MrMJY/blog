@@ -21,6 +21,8 @@
 + 浏览器会把js源码通过解析器转换为抽象语法树，再进一步转换为字节码或直接生成机器码。
 + 一般来说每个js引擎都会有自己的抽象语法树格式，Chrome的V8引擎，Firefox的SpiderMonkey引擎等等，MDN提供了详细SpiderMonkey AST Format的详细说明，算是业界的标准。
 
+> AST相关的类型资料：https://github.com/estree/estree
+
 #### 常用的JavaScript Parser
 + [esprima](https://esprima.readthedocs.io)
 + traceur

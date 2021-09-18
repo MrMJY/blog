@@ -2,6 +2,8 @@
 对应`NormalModuleFactory`创建出来的`Module`
 
 ```js
+const { getContext, runLoaders } = require("loader-runner");
+
 class NormalModule extends Module {
   constructor({
 		type,
@@ -48,9 +50,9 @@ class NormalModule extends Module {
 	}
   // 对模块进行build（宏观上）
   build(options, compilation, resolver, fs, callback) {
-		this.buildTimestamp = Date.now();
+		this.buildTimestamp = Date.now(); // 构建时间戳
 		this.built = true;
-		this._source = null;
+		this._source = null; // 通过loader解析后的源码
 		this._sourceSize = null;
 		this._ast = null;
 		this._buildHash = "";

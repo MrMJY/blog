@@ -415,12 +415,15 @@ class Compilation extends Tapable {
 		const addDependency = dep => {
 			const resourceIdent = dep.getResourceIdentifier();
 			if (resourceIdent) {
+				// 获得依赖的构造函数
 				const factory = this.dependencyFactories.get(dep.constructor);
 				if (factory === undefined) {
 					throw new Error(
 						`No module factory available for dependency type: ${dep.constructor.name}`
 					);
 				}
+				// 创建一个依赖结构
+				// addDependency[{ factory: [{ resourceIdent: [dep] }] }]
 				let innerMap = dependencies.get(factory);
 				if (innerMap === undefined) {
 					dependencies.set(factory, (innerMap = new Map()));
@@ -758,17 +761,17 @@ class Compilation extends Tapable {
 			sortedDependencies,
 			this.bail,
 			null,
-			true,
+			true, // 递归标志位
 			callback
 		);
 	}
-
+	// 给Module添加依赖
 	addModuleDependencies(
 		module,
 		dependencies,
 		bail,
 		cacheGroup,
-		recursive,
+		recursive,  // 递归标志位
 		callback
 	) {
 		const start = this.profile && Date.now();
@@ -841,7 +844,7 @@ class Compilation extends Tapable {
 								afterFactory = Date.now();
 								currentProfile.factory = afterFactory - start;
 							}
-
+							// 迭代依赖，将创建的模块赋值到依赖上
 							const iterationDependencies = depend => {
 								for (let index = 0; index < depend.length; index++) {
 									const dep = depend[index];
@@ -856,8 +859,9 @@ class Compilation extends Tapable {
 							);
 							dependentModule = addModuleResult.module;
 							iterationDependencies(dependencies);
-
+							// 处理依赖的依赖
 							const afterBuild = () => {
+								// 依赖中是否有依赖，如果有继续递归，否则结束递归
 								if (recursive && addModuleResult.dependencies) {
 									this.processModuleDependencies(dependentModule, callback);
 								} else {
@@ -884,7 +888,7 @@ class Compilation extends Tapable {
 									}
 								}
 							}
-
+							// build依赖
 							if (addModuleResult.build) {
 								this.buildModule(
 									dependentModule,
@@ -903,6 +907,7 @@ class Compilation extends Tapable {
 										}
 
 										semaphore.release();
+										// 递归
 										afterBuild();
 									}
 								);

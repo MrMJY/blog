@@ -31,7 +31,7 @@ module.exports = {
       },
       {
         text: '面试题',
-        link: '/interviewQuestions/JS/'
+        link: '/interviewQuestions/base/'
       }
     ],
     // 侧边栏
@@ -113,27 +113,39 @@ module.exports = {
       ],
       '/interviewQuestions': [
         {
-          title: "JS",
+          title: "基础",
           collabsable: true,
-          path: '/interviewQuestions/JS'
+          path: '/interviewQuestions/base'
         },
         {
-          title: "浏览器",
+          title: "语法",
           collabsable: true,
-          path: '/interviewQuestions/Browser'
+          path: '/interviewQuestions/syntax'
         },
         {
-          title: "Vue",
+          title: "框架",
           collabsable: true,
-          children: [
-            ['/interviewQuestions/Vue/Vue', 'Vue'],
-            ['/interviewQuestions/Vue/Vuex', 'Vuex']
-          ]
+          path: '/interviewQuestions/frame'
         },
         {
-          title: "项目",
+          title: "工程",
           collabsable: true,
           path: '/interviewQuestions/project'
+        },
+        {
+          title: "网络",
+          collabsable: true,
+          path: '/interviewQuestions/internet'
+        },
+        {
+          title: "性能",
+          collabsable: true,
+          path: '/interviewQuestions/performance'
+        },
+        {
+          title: "插件",
+          collabsable: true,
+          path: '/interviewQuestions/plugin'
         }
       ],
       '/webpackSource': [
