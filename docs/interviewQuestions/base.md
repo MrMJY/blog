@@ -1,4 +1,84 @@
 ## 计算机原理
+## CSS
+### 如何实现一个上中下三行布局，顶部和底部最小高度是100px，中间自适应?
+```html
+<html>
+  <body>
+    <div class="top"></div>
+    <div class="content"></div>
+    <div class="bottom"></div>
+  </body>
+</html>
+```
++ 定位
+```css
+/* 高度设置为浏览器高度 */
+html, body {
+  height: 100%;
+  position: relative;
+}
+
+body > div {
+  position: absolute;
+}
+
+.top {
+  top: 0;
+  width : 100%;
+  height: 100px;
+  background-color: red;
+}
+
+.content {
+  top: 100px;
+  bottom: 100px;
+  background-color: blue;
+}
+
+.bottom {
+  bottom: 0;
+  height: 100px;
+  background-color: red;
+}
+```
++ 弹性布局
+```css
+html, body {
+  height:100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  background-color: blue;
+}
+
+.top, .bottom {
+  height: 100px;
+  background-color: red;
+}
+```
++ 网格布局
+```css
+html, body {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  display: grid;
+  background-color: blue;
+  grid-template-rows: 100px auto 100px;
+}
+
+.top, .bottom {
+  background-color: red;
+}
+```
 ## 编译原理
 ### 1.解释型语言和编译型语言的差异是什么？JavaScript是如何运行的？
 **编译型语言**和**解释型语言**这两个都是概念，没有团体或者组织规定这些。
@@ -175,8 +255,138 @@ console.log(10)
 + [【图解】浏览器及nodeJS中的EventLoop事件循环机制](https://zhuanlan.zhihu.com/p/389250124)
 + [浏览器与Node的事件循环(Event Loop)有何区别?](https://zhuanlan.zhihu.com/p/54882306)
 + [Node.js VS 浏览器以及事件循环机制](https://juejin.cn/post/6871832597891121166)
+### `ES6 Modules`相对于`CommonJS`的优势是什么?
+**区别：**
 
+`CommonJS`是一种模块规范，最初被应用于`Nodejs`，成为`Nodejs`的模块规范。
+
+自`ES6`起，引入了一套新的`ES6 Module`规范，在语言标准的层面上实现了模块功能，而且实现得相当简单，有望成为浏览器和服务器通用的模块解决方案。但目前浏览器对`ES6 Module`兼容还不太好，平时在`Webpack`中使用的`export`和`import`，会经过`Babel`转换为`CommonJS`规范。在使用上的差别主要有：
++ `CommonJS`模块输出的是一个值的拷贝，`ES6`模块输出的是值的引用。
++ `CommonJS`模块是运行时加载，`ES6`模块是编译时输出接口。
++ `CommonJs`是单个值导出，`ES6 Module`可以导出多个。
++ `CommonJs`是动态语法可以写在判断里，`ES6 Module`静态语法只能写在顶层。
++ `CommonJs`的`this`是当前模块，`ES6 Module`的`this`是`undefined`。
+
+**优势：**
++ `ES6 Module`在语言标准的层面上，实现了模块功能，而且实现得相当简单，完全可以取代 `CommonJS`和`AMD`规范，成为浏览器和服务器通用的模块解决方案。
++ `ES6 Module`的设计思想是尽量的静态化，使得编译时就能确定模块的依赖关系，可以在编译时做“静态优化”，效率要比`CommonJS`模块的加载方式高。
++ 能进一步拓宽`JavaScript`的语法，比如引入宏（macro）和类型检验（type system）这些只能靠静态分析实现的功能。
++ 不再需要`UMD`模块格式了，将来服务器和浏览器都会支持`ES6`模块格式。目前，通过各种工具库，其实已经做到了这一点。
++ 将来浏览器的新`API`就能用模块格式提供，不再必须做成全局变量或者`navigator`对象的属性。
++ 不再需要对象作为命名空间（比如Math对象），未来这些功能可以通过模块提供。
+
+相关文章：
++ [ECMAScript 6 入门-Module-概述](https://es6.ruanyifeng.com/#docs/module#%E6%A6%82%E8%BF%B0)
++ [CommonJs和ES6 module的区别是什么呢？](https://www.zhihu.com/question/62791509/answer/1535800470)
++ [ES6 模块与 CommonJS 模块的差异](https://es6.ruanyifeng.com/#docs/module-loader#ES6-%E6%A8%A1%E5%9D%97%E4%B8%8E-CommonJS-%E6%A8%A1%E5%9D%97%E7%9A%84%E5%B7%AE%E5%BC%82)
 ## 数据结构
 ## 算法
 ## 设计模式
+### 发布/订阅模式和观察者模式的区别是什么？
+**观察者模式：**
+
+观察者模式定义了对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都将得到通知，并自动更新。主要解决一个对象状态改变给其他对象通知的问题，而且要考虑到易用和低耦合，保证高度的协作。
+![观察者模式](http://www.mjy-blog.cn/blog-assets/观察者模式.jpg)
+
+**发布订阅模式：**
+
+发布者不会将消息直接发送给订阅者，这意味着发布者和订阅者不知道彼此的存在。在发布者和订阅者之间存在第三个组件，称为**消息代理**或**调度中心**或**中间件**，它维持着发布者和订阅者之间的联系，过滤所有发布者传入的消息并相应地分发它们给订阅者。
+![观察者与发布订阅模式区别](http://www.mjy-blog.cn/blog-assets/观察者与发布订阅模式区别.jpg)
+
+**两者区别：**
++ 订阅-发布是观察者模式的一个变种。
++ 观察者模式中主体和观察者是互相感知的，发布-订阅模式是借助第三方来实现调度的，发布者和订阅者之间互不感知（完全解耦）
++ 订阅-发布模式，观察者只有订阅了才能接受到被观察者的消息，同时观察者还可以取消订阅被观察者的消息
++ 观察者模式，多用于单个应用内部，发布订阅模式，则更多的是一种跨应用的模式
+
+相关文章：
++ [观察者模式和发布-订阅模式的区别](https://www.jianshu.com/p/c577e9fc8ae4)
+### 装饰器模式一般会在什么场合使用？
+**基本概念和功能：**
+
+装饰器模式能够**实现从一个对象的外部来给对象添加功能，有非常灵活的扩展性，可以在对原来的代码毫无修改的前提下，为对象添加新功能**。除此之外，装饰器模式还能够**实现对象的动态组合**，借此我们可以很灵活地给动态组合的对象，匹配所需要的功能。
+
+**装饰器的使用：**
+
+装饰器(`Decorator`)是`ES7`的一个新语法，是一种与类(`class`)相关的语法，用来注释或修改**类**和**类方法**，装饰器是一种函数，写成`@ + 函数名`。它可以放在类和类方法的定义前面。
+
++ 类的装饰
+```js
+@testable
+class MyTestableClass {
+  // ...
+}
+
+function testable(target) {
+  target.isTestable = true;
+}
+
+MyTestableClass.isTestable // true
+```
+`@testable`就是一个装饰器。它修改了`MyTestableClass`这个类的行为，为它加上了静态属性`isTestable`。`testable`函数的参数`target`是`MyTestableClass`类本身。装饰器函数的第一个参数，就是所要装饰的目标类。
+```js
+function testable(isTestable) {
+  return function(target) {
+    target.isTestable = isTestable;
+  }
+}
+
+@testable(true)
+class MyTestableClass {}
+MyTestableClass.isTestable // true
+
+@testable(false)
+class MyClass {}
+MyClass.isTestable // false
+```
+如果觉得一个参数不够用，可以在装饰器外面再封装一层函数。这就等于可以修改装饰器的行为。
+:::warning 注意
+装饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。这意味着，装饰器能在编译阶段运行代码。也就是说，装饰器本质就是编译时执行的函数。
+:::
++ 类方法的装饰
+```js
+class Person {
+  @readonly
+  name() { return `${this.first} ${this.last}` }
+}
+```
+装饰器函数`readonly`一共可以接受三个参数。
+```js
+function readonly(target, name, descriptor){
+  // descriptor对象原来的值如下
+  // {
+  //   value: specifiedFunction,
+  //   enumerable: false,
+  //   configurable: true,
+  //   writable: true
+  // };
+  descriptor.writable = false;
+  return descriptor;
+}
+
+readonly(Person.prototype, 'name', descriptor);
+// 类似于
+Object.defineProperty(Person.prototype, 'name', descriptor);
+```
+装饰器的本意是要“装饰”类的实例，但是这个时候实例还没生成，所以只能去装饰原型（这不同于类的装饰，那种情况时`target`参数指的是类本身）；第二个参数是所要装饰的属性名，第三个参数是该属性的描述对象。
+
+如果同一个方法有多个装饰器，会像剥洋葱一样，先从外到内进入，然后由内向外执行。
+
+**应用场景：**
++ 当我们接手老代码，需要对它已有的功能做个拓展。
+
+相关文章：
++ [ECMAScript 6 入门](https://es6.ruanyifeng.com/#docs/decorator)
++ [装饰器模式的使用总结](https://blog.csdn.net/xiaofeng10330111/article/details/105608235)
 ## 编程范式
+### 列举你所了解的编程范式？
+编程范式（Programming paradigm）是指计算机编程的基本风格或者典型模式，可以简单理解为编程学科中实践出来的具有哲学和理论依据的一些经典原型。常见的编程范式有：
++ 面向过程（Process Oriented Programming，POP）
++ 面向对象（Object Oriented Programming，OOP）
++ 面向接口（Interface Oriented Programming， IOP）
++ 面向切面（Aspect Oriented Programming，AOP）
++ 函数式（Funtional Programming，FP）
++ 响应式（Reactive Programming，RP）
++ 函数响应式（Functional Reactive Programming，FRP）
+
+不同的语言可以支持多种不同的编程范式，例如 C 语言支持 POP 范式，C++ 和 Java 语言支持 OOP 范式，Swift 语言则可以支持 FP 范式，而 Web 前端中的 JavaScript 可以支持上述列出的所有编程范式。
