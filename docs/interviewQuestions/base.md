@@ -1,6 +1,6 @@
 ## 计算机原理
 ## CSS
-### 如何实现一个上中下三行布局，顶部和底部最小高度是100px，中间自适应?
+### 1.如何实现一个上中下三行布局，顶部和底部最小高度是100px，中间自适应?
 ```html
 <html>
   <body>
@@ -79,6 +79,60 @@ body {
   background-color: red;
 }
 ```
+### 2.如何判断一个元素`CSS`样式溢出，从而可以选择性的加`title`或者`Tooltip`
+通过题目可以看出，这个问题的重点是如何判断一个元素的内容溢出。说到底是想考察盒子模型相关的问题，已经如何计算判断溢出，至于如何添加`title`或者`Tooltip`都是次要的。
+
+![元素大小位置详细图解](http://www.mjy-blog.cn/blog-assets/元素大小详细图解.jpg)
+
+**相关熟悉：**
++ `offsetWidth/offsetHeight`：对象的可见宽度（包含滚动条区域）
++ `clientWidth/clientHeight`：内容的可见宽度（不包含滚动条区域）
++ `scrollWidth/scrollHeight`：元素完整的高度和宽度（包含看不到的部分）
++ `offsetLeft/offsetTop`：当前元素距**浏览器**边界的偏移量，以像素为单位
++ `clientTop/clientLeft`：这个属性测试下来的结果就是border
++ `scrollLeft/scrollTop`：设置或返回已经滚动到元素的左边界或上边界的像素数
+
+**相关公式：**
++ `clientWidth`(内容宽度)=`elementWidth`(元素宽度)+`padding`(内边距)-滚动条的宽度(如果有滚动条)(不考虑边界`border`)
++ `offsetWidth`(可见宽度)=`elementWidth`(元素宽度)+`padding`(内边距)+`border`(边界)(滚动条包含在边界内部了，没有产生额外距离，不用计算)
++ `clientTop`=`border-top`属性值
++ `offsetTop`=`border-top`属性值+`margin`
+
+**添加title或者Tooltip：**
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CSS文字溢出显示提示title或者tooltip</title>
+    <style>
+      div {
+        width: 100px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="div">我是一段溢出的文字！</div>
+  </body>
+  <script>
+      const div = document.getElementById('div')
+      div.addEventListener('mouseover', function() {
+        if (div.offsetWidth < div.scrollWidth) {
+          div.title = '我是一段溢出的文字！'
+        }
+      })
+  </script>
+</html>
+```
+### 3.如何让`CSS`元素左侧自动溢出
+`CSS`属性`direction`用来设置文本、表列水平溢出的方向。`rtl`表示从右到左，`ltr`表示从左到右。
+### 4.什么是沙箱？浏览器的沙箱有什么作用？
+相关文章：
++ [浏览器的沙箱机制](https://zhuanlan.zhihu.com/p/80390160)
++ [说说JS中的沙箱](https://juejin.cn/post/6844903954074058760)
 ## 编译原理
 ### 1.解释型语言和编译型语言的差异是什么？JavaScript是如何运行的？
 **编译型语言**和**解释型语言**这两个都是概念，没有团体或者组织规定这些。
@@ -203,10 +257,10 @@ Babel的编译过程可分为以下是三个过程：
 
 **浏览器EventLoop的具体流程：**
 + 一开始执行栈（遵循先进后出的原则）空，`micro`队列空，`macro`队列里有且只有一个`script`脚本（整体代码）。
-+ 全局上下文（script 标签）被推入执行栈，同步代码执行。在执行的过程中，会判断是同步任务还是异步任务，通过对一些接口的调用，可以产生新的`macro-task`与`micro-task`，它们会分别被推入各自的任务队列里。同步代码执行完了，`script`脚本会被移出`macro`队列，这个过程本质上是队列的`macro-task`的执行和出队的过程。
++ 全局上下文（script 标签）被推入执行栈，同步代码执行。在执行的过程中，会判断是同步任务还是异步任务，通过对一些接口的调用，可以产生新的`macro-task`与`micro-task`，它们会分别被其他辅助线程处理，处理完成后推入各自的任务队列里。同步代码执行完了，`script`脚本会被移出`macro`队列，这个过程本质上是队列的`macro-task`的执行和出队的过程。
 + 上一步我们出队的是一个`macro-task`，这一步我们处理的是`micro-task`。处理`micro`队列这一步，会逐个执行队列中的任务并把它出队，直到队列被清空。
   > 需要注意的是：`macro-task`任务是**一个一个**执行的；而`micro-task`任务是**一队一队**执行的。
-+ 执行渲染操作，更新界面
++ **执行渲染操作，更新界面**
 + 检查是否存在`Web worker`任务，如果有，则对其进行处理
 + 上述过程循环往复，直到两个队列都清空
 
@@ -251,11 +305,59 @@ console.log(10)
 // 答案：1，4，10，5，6，7，2，3，9，8 你做对了吗？ 如果还不明白的话对照图在走一次。
 // Promise.resolve().then(() => {})会立即让回调处于就位状态
 ```
+**`Node`中的`Event Loop`**
+
+`Node`中的`Event Loop`和浏览器中的是完全不相同的东西。`Node.js`采用`V8`作为`js`的解析引擎，而`I/O`处理方面使用了自己设计的`libuv`，`libuv`是一个基于事件驱动的跨平台抽象层，封装了不同操作系统一些底层特性，对外提供统一的`API`，事件循环机制也是它里面的实现。
+<img src="http://www.mjy-blog.cn/blog-assets/node-eventloop.jpg" style="width: 100%;"></img>
+**Node.js 的运行机制如下：**
+
++ `V8`引擎解析`JavaScript`脚本
++ 解析后的代码，调用`Node API`
++ `libuv`库负责`Node API`的执行。它将不同的任务分配给不同的线程，形成一个`Event Loop`，以异步的方式将任务的执行结果返回给`V8`引擎
++ `V8`引擎再将结果返回给用户
+
+**六个阶段：**
+
+其中`libuv`引擎中的事件循环分为6个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当**队列为空**或者**执行的回调函数数量到达系统设定的阈值**，就会进入下一阶段。
+
+![Node事件循环6个阶段](http://www.mjy-blog.cn/blog-assets/node-step.jpg)
+
+从上图中，大致看出`node`中的事件循环的顺序：
+
+外部输入数据(初始点) –> 轮询阶段(poll) –> 检查阶段(check) –> 关闭事件回调阶段(close callback) –> 定时器检测阶段(timer) –> I/O事件回调阶段(I/O callbacks) –> 闲置阶段(idle, prepare) –> 轮询阶段（按照该顺序反复运行）...
++ `timers`阶段：这个阶段执行`timer`(`setTimeout`、`setInterval`)的回调
++ `I/O callbacks`阶段：处理一些上一轮循环中的少数未执行的`I/O`回调
++ `idle`、`prepare`阶段：仅`node`内部使用
++ `poll`阶段：获取新的`I/O`事件，适当的条件下`node`将阻塞在这里
++ `check`阶段：执行`setImmediate()`的回调
++ `close callbacks`阶段：执行`socket`的`close`事件回调
+
+**(1) timer阶段：**
+
+`timers`阶段会执行`setTimeout`和`setInterval`回调，并且是由`poll`阶段控制的。
+同样，在`Node`中定时器指定的时间也**不是准确时间**，只能是尽快执行。
+
+**(2) poll阶段：**
+
+`poll`是一个至关重要的阶段，这一阶段中，系统会做两件事情
++ 回到`timer`阶段执行回调
+  + 如果没有设定了`timer`的话，会发生以下两件事情
+    + 如果`poll`队列不为空，会遍历回调队列并同步执行，直到队列为空或者达到系统限制
+    + 如果`poll`队列为空时，会有两件事发生
+      + 如果有`setImmediate`回调需要执行，`poll`阶段会停止并且进入到`check`阶段执行回调
+      + 如果没有`setImmediate`回调需要执行，会**等待回调**被加入到队列中并**立即执行回调**，这里同样会有个**超时时间**设置防止一直等待下去
+  + 设定了`timer`的话且`poll`队列为空，则会判断是否有`timer`超时，如果有的话会回到`timer`阶段执行回调
++ 执行`I/O`回调
+
+**(3) check 阶段：**
+
+`setImmediate()`的回调会被加入`check`队列中，从`event loop`的阶段图可以知道，`check`阶段的执行顺序在 `poll`阶段之后。
+
 相关文章：
++ [浏览器与Node的事件循环(Event Loop)有何区别?(推荐)](https://zhuanlan.zhihu.com/p/54882306)
 + [【图解】浏览器及nodeJS中的EventLoop事件循环机制](https://zhuanlan.zhihu.com/p/389250124)
-+ [浏览器与Node的事件循环(Event Loop)有何区别?](https://zhuanlan.zhihu.com/p/54882306)
 + [Node.js VS 浏览器以及事件循环机制](https://juejin.cn/post/6871832597891121166)
-### `ES6 Modules`相对于`CommonJS`的优势是什么?
+### 5.`ES6 Modules`相对于`CommonJS`的优势是什么?
 **区别：**
 
 `CommonJS`是一种模块规范，最初被应用于`Nodejs`，成为`Nodejs`的模块规范。
@@ -282,7 +384,7 @@ console.log(10)
 ## 数据结构
 ## 算法
 ## 设计模式
-### 发布/订阅模式和观察者模式的区别是什么？
+### 1.发布/订阅模式和观察者模式的区别是什么？
 **观察者模式：**
 
 观察者模式定义了对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都将得到通知，并自动更新。主要解决一个对象状态改变给其他对象通知的问题，而且要考虑到易用和低耦合，保证高度的协作。
@@ -301,7 +403,7 @@ console.log(10)
 
 相关文章：
 + [观察者模式和发布-订阅模式的区别](https://www.jianshu.com/p/c577e9fc8ae4)
-### 装饰器模式一般会在什么场合使用？
+### 2.装饰器模式一般会在什么场合使用？
 **基本概念和功能：**
 
 装饰器模式能够**实现从一个对象的外部来给对象添加功能，有非常灵活的扩展性，可以在对原来的代码毫无修改的前提下，为对象添加新功能**。除此之外，装饰器模式还能够**实现对象的动态组合**，借此我们可以很灵活地给动态组合的对象，匹配所需要的功能。
@@ -379,7 +481,7 @@ Object.defineProperty(Person.prototype, 'name', descriptor);
 + [ECMAScript 6 入门](https://es6.ruanyifeng.com/#docs/decorator)
 + [装饰器模式的使用总结](https://blog.csdn.net/xiaofeng10330111/article/details/105608235)
 ## 编程范式
-### 列举你所了解的编程范式？
+### 1.列举你所了解的编程范式？
 编程范式（Programming paradigm）是指计算机编程的基本风格或者典型模式，可以简单理解为编程学科中实践出来的具有哲学和理论依据的一些经典原型。常见的编程范式有：
 + 面向过程（Process Oriented Programming，POP）
 + 面向对象（Object Oriented Programming，OOP）
