@@ -123,6 +123,11 @@ module.exports = {
           path: '/interviewQuestions/syntax'
         },
         {
+          title: "浏览器",
+          collabsable: true,
+          path: '/interviewQuestions/browser'
+        },
+        {
           title: "框架",
           collabsable: true,
           path: '/interviewQuestions/frame'
