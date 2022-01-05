@@ -1,6 +1,5 @@
 ---
 home: true
-heroImage: /img/love.jpg
 heroText: 前端学习笔记
 tagline: 一份随笔
 actionText: 开始学习吧

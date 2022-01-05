@@ -92,9 +92,20 @@ module.exports = {
         },
         {
           title: '框架',
-          collabsable: true,
           children: [
-            ['/start/framework/Vue3', 'Vue3']
+            {
+              title: 'Vue3',
+              children: [
+                {
+                  title: '初次体验Vue3',
+                  path: '/start/framework/Vue/Vue3'
+                },
+                {
+                  title: '使用以及思考',
+                  path: '/start/framework/Vue/use-thinking'
+                }
+              ]
+            }
           ]
         },
         {

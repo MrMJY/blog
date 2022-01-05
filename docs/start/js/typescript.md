@@ -70,9 +70,15 @@ x[6] = true; // Error, 布尔不是(string | number)类型
 enum Color { Red, Green, Blue }
 let c: Color = Color.Green;
 
+// 1. 数字枚举
 // 默认情况下，从0开始为元素编号，值递增。你也可以手动的指定成员的数值。
 enum Color { Red = 1, Green, Blue }
 let c: Color = Color.Green;
+
+// 2. 字符串枚举
+// 可以手动指定成员的值为字符串
+enum Color { Red = "red", Green = "green" }
+let red: Color = Color.Red;
 
 // 全部都采用手动赋值
 enum Color { Red = 1, Green = 2, Blue = 4 }
@@ -83,6 +89,51 @@ enum Color { Red = 1, Green, Blue }
 let colorName: string = Color[2];
 
 console.log(colorName);  // 显示'Green'因为上面代码里它的值是2
+
+// 3. 常量枚举
+// 是使⽤ const 关键字修饰的枚举，不会为枚举类型编译⽣成任何JavaScript
+const enum Direction {
+ NORTH,
+ SOUTH,
+ EAST,
+ WEST,
+}
+let dir: Direction = Direction.NORTH;
+// 以上代码对应的 ES5 代码如下：
+"use strict";
+var dir = 0 /* NORTH */;
+```
+**有静态方法的枚举**
+
+可以使用`enum + namespace`的声明的方式向枚举类型添加静态方法。
+```ts
+enum Weekday {
+  Monday,
+  Tuseday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+  Sunday
+}
+
+namespace Weekday {
+  export function isBusinessDay(day: Weekday) {
+    switch (day) {
+      case Weekday.Saturday:
+      case Weekday.Sunday:
+        return false;
+      default:
+        return true;
+    }
+  }
+}
+
+const mon = Weekday.Monday;
+const sun = Weekday.Sunday;
+
+console.log(Weekday.isBusinessDay(mon)); // true
+console.log(Weekday.isBusinessDay(sun));
 ```
 ::: tip 特性
 ① 默认情况下，从0开始为元素赋值，或者根据最后一个手动赋值的值，依次递增值<br>
@@ -124,6 +175,73 @@ function warnUser(): void {
   console.log("This is my warning message");
 }
 ```
+**联合类型**
+
+给一个变量设置多个类型，类型之间是或的关系，只要满足其中一种类型，即可编译通过。
+```ts
+// 数字
+let num: number | undefined;
+// do somethings ...
+num = 123;
+// 当一个变量初始时没有值时，后续需要赋值时非常常用
+```
+
+**交叉类型**
+
+在`JavaScript`中，`extend`是一种非常常见的模式，在这种模式中，你可以从两个对象中创建一个新对象，新对象会拥有着两个对象所有的功能。交叉类型(`&`)可以让你安全的使用此种模式:
+```ts
+function extend<T, U>(first: T, second: U): T & U {
+  const result = <T & U>{};
+  for (let id in first) {
+    (<T>result)[id] = first[id];
+  }
+  for (let id in second) {
+    if (!result.hasOwnProperty(id)) {
+      (<U>result)[id] = second[id];
+    }
+  }
+
+  return result;
+}
+
+const x = extend({ a: 'hello' }, { b: 42 });
+
+// 现在 x 拥有了 a 属性与 b 属性
+const a = x.a;
+const b = x.b;
+```
+
+**类型别名**
+
+`TypeScript`提供使用类型注解的便捷语法，你可以使用`type SomeName = someValidTypeAnnotation`的语法来创建别名，在联合类型和交叉类型中比较实用：
+```ts
+type StrOrNum = string | number;
+// 使用
+let sample: StrOrNum;
+sample = 123;
+sample = '123';
+// 会检查类型
+sample = true; // Error
+
+// 例子
+type Text = string | { text: string };
+type Coordinates = [number, number];
+type Callback = (data: string) => void;
+```
+:::tip
++ 如果你需要使用类型注解的层次结构，请使用接口。它能使用`implements`和`extends`。
++ 为一个简单的对象类型（像例子中的`Coordinates`）使用类型别名，仅仅有一个语义化的作用。与此相似，当你想给一个联合类型和交叉类型使用一个语意化的名称时，一个类型别名将会是一个好的选择。
+:::
+
+**类型推断**
+
+如果变量变量没有明确指定类型，编译器会自动推断出一个类型。
+```ts
+let num: number = 123;
+// 简写
+let num = 123; // ts 自动推断出类型，自动实现上面的写法
+```
+
 ### 补充
 ```ts
 // 【Symbol】
@@ -136,82 +254,12 @@ let underfin: undefined;  // 声明变量但是未赋值
 let empt: null = null;
 // 设置了类型为 undefined 或 null 之后无法再赋值为其他类型
 
-// 【对象】
-// 不指定成员以及类型，后续无法赋值
-let obj: { x: number, y: number } = { x: 1, y: 2 }
-obj.x = 4
-
-// 【函数】
-// 【函数返回值】string, number, boolean, Array<type>, void
-// 方法一：
-function fun(): string {
-  return 'hello';
-}
-
-// 方法二：
-let computed: (x: number, y: number) => number
-computed = (add1, add2) => add1 + add2
-
-// 【函数参数】参数也支持联合类型
-function fun1(arg1: string | number, arg2: number): void {}
-
-// 【函数默认值】设置默认值后这个参数就不能设置为可选参数（可选无效，有一个默认值，相当于一直有值）
-function fun2(arg1: string = 'string', arg2: number = 2): void {}
-
-// 【函数可选参数】
-// 表示 arg2 参数可选
-function fun3(arg1?: string, arg2?: number): void {}
-
-// 【多个带默认值函数的调用】，前面使用默认值，后面传入实参
-// 使用 undefined 占位
-fun3(undefined, 2)
-
-// 【剩余参数】
-// 剩余参数只能是数组、剩余参数只能放在最后，剩余参数只能有一个
-function fun4(arg1: number, arg2: number, ...args: Array<number>): void {}
-
 // 【any、void、never】
 let dom: any = document.getElementById('app'); // DOM类型很多，无法知道返回类型
 function sayHello(name: string):void {         // 函数无返回值，使用 void
   console.log(`hi, my name is ${name}`);
 }
 // never 代表不存在的值的类型，常用作为抛出异常和无限循环的函数返回类型
-```
-
-**类型断言**
-
-类型断言是告诉编译器这个变量的明确类型，“相信我，我知道我在做什么”。好比其它语言的类型转换，但是不进行特殊的数据校验和结构，它没有运行时影响，只在编译阶段起作用。
-```ts
-// 尖括号语法
-let someValue: any = "this is a string";
-let strLength: number = (<string>someValue).length; // 将someValue类型强制转换为string
-
-// as语法
-let someValue: any = "this is a string";
-let strLength: number = (someValue as string).length;
-```
-::: warning 注意
-当你在TypeScript里使用JSX时，只有 as语法断言是被允许的。
-:::
-
-**联合类型**
-
-给一个变量设置多个类型，类型之间是或的关系，只要满足其中一种类型，即可编译通过。
-```ts
-// 数字
-let num: number | undefined;
-// do somethings ...
-num = 123;
-// 当一个变量初始时没有值时，后续需要赋值时非常常用
-```
-
-**类型推断**
-
-如果变量变量没有明确指定类型，编译器会自动推断出一个类型。
-```ts
-let num: number = 123;
-// 简写
-let num = 123; // ts 自动推断出类型，自动实现上面的写法
 ```
 
 ## 接口
@@ -224,11 +272,11 @@ enum Gender { man, women }
 enum Marry { unmarried, married }
 // 定义了一个学生的接口（数据结构）
 interface Student {
-  name: string,
-  gender: Gender,
-  school: string,
-  profession: string,
-  marry: Marry
+  name: string;
+  gender: Gender;
+  school: string;
+  profession: string;
+  marry: Marry;
 }
 // 定义一个方法，传入的参数，类型为一种Student结构
 function CreateStudent(student: Student) {
@@ -252,13 +300,13 @@ console.log(stu)
 接口里的属性不全都是必需的。带有可选属性的接口与普通的接口定义差不多，只是在可选属性名字定义的后面加一个`?`符号
 ```ts
 interface Student {
-  name: string,
-  gender: Gender,
-  school: string,
-  profession: string,
-  marry: Marry,
-  hasCar?: boolean,
-  hasHourse?: boolean
+  name: string;
+  gender: Gender;
+  school: string;
+  profession: string;
+  marry: Marry;
+  hasCar?: boolean;
+  hasHourse?: boolean;
 }
 ```
 可选属性的好处:
@@ -269,13 +317,27 @@ interface Student {
 一些对象属性只能在对象刚刚创建的时候修改其值。你可以在属性名前用`readonly`来指定只读属性
 ```ts
 interface Student {
-  name: string,
-  readonly gender: Gender,
-  school: string,
-  profession: string,
-  marry: Marry,
-  hasCar?: boolean,
-  hasHourse?: boolean
+  name: string;
+  readonly gender: Gender;
+  school: string;
+  profession: string;
+  marry: Marry;
+  hasCar?: boolean;
+  hasHourse?: boolean;
+}
+```
+#### 额外的属性
+一个类型能够包含索引签名，以明确表明可以使用额外的属性
+```ts
+interface Student {
+  name: string;
+  readonly gender: Gender;
+  school: string;
+  profession: string;
+  marry: Marry;
+  hasCar?: boolean;
+  hasHourse?: boolean;
+  [key: string]: any; // 额外的属性
 }
 ```
 > `TypeScript`具有`ReadonlyArray<T>`类型，它与`Array<T>`相似，只是把所有可变方法去掉了，因此可以确保数组创建后再也不能被修改，但是你可以用类型断言重写。
@@ -333,6 +395,18 @@ class Animal implements Animal {
 const dog = new Animal('二哈')
 dog.eat('狗粮')
 ```
+### 可实例化接口
+可实例化（构造函数接口）仅仅是可调用的一种特殊情况，它使用`new`做为前缀。它意味着你需用使用`new`关键字去调用它：
+```ts
+interface CallMeWithNewToGetString {
+  new (): string;
+}
+
+// 使用
+declare const Foo: CallMeWithNewToGetString;
+const bar = new Foo();  // bar 被推断为 string 类型
+```
+
 ### 继承接口
 和类一样，接口也可以相互继承。这让我们能够从一个接口里复制成员到另一个接口里，可以更灵活地将接口分割到可重用的模块里。可以继承多个接口，用`,`分割。
 ```ts
@@ -399,7 +473,7 @@ p.codding('ts代码');
 ## 函数
 和JavaScript一样，TypeScript函数可以创建有名字的函数和匿名函数。
 ### 函数类型
-**基本函数类型**
+**参数、返回值注释**
 ```ts
 function add(x: number, y: number): number {
   return x + y;
@@ -425,7 +499,7 @@ let myAdd: (baseValue: number, increment: number) => number = function(x, y) { r
 
 > JavaScript里，每个参数都是可选的，可传可不传。没传参的时候，它的值就是undefined。
 
-在`TypeScript`里我们可以在参数名后面使用`?`实现可选参数的功能。**可选参数必须跟在必须参数后面。**
+在`TypeScript`里我们可以在参数名后面使用`?`实现可选参数的功能。**如果可选参数在前，不想传递参数时用`undefined`占位**
 ```ts
 function buildName(firstName: string, lastName?: string) {
   if (lastName)
@@ -436,7 +510,7 @@ function buildName(firstName: string, lastName?: string) {
 ```
 在`TypeScript`里，我们也可以为参数提供一个**默认值当用户没有传递这个参数或传递的值是undefined时**。
 ```ts
-function buildName(firstName: string, lastName = "Smith") {
+function buildName(firstName: string, lastName?: string = "Smith") {
   return firstName + " " + lastName;
 }
 ```
@@ -478,6 +552,68 @@ alert("card: " + pickedCard1.card + " of " + pickedCard1.suit);
 let pickedCard2 = pickCard(15);
 alert("card: " + pickedCard2.card + " of " + pickedCard2.suit);
 ```
+## 类型断言
+
+类型断言是告诉编译器这个变量的明确类型，“相信我，我知道我在做什么”。可以理解为其它语言的类型转换，但是不进行特殊的数据和结构转换，它没有运行时影响，只在编译阶段起作用。
+```ts
+interface Foo {
+  bar: number;
+  bas: string;
+}
+// 因为 foo 的类型推断为 {} ，即是具有零属性的对象。因此，你不能在它的属性上添加 bar 或 bas ，你可以通过类型断言来避免此问题
+const foo = {} as Foo;
+// const foo = <Foo>{};
+foo.bar = 123;
+foo.bas = 'hello';
+```
+::: warning 注意
+当你在TypeScript里使用JSX时，因为`<string>`语法与JSX在语法上有冲突，只有`as`语法断言是被允许的。为了一致性，我们建议你使用`as`的语法
+:::
+## 操作符
+### `typeof`
+`typeof`是获取一个**对象/实例**的类型，`typeof`只能用在具体的对象上，这与`js`中的`typeof`是一致的，并且它会根据左侧值自动决定应该执行哪种行为。如下：
+```ts
+type Person = {
+  name: string;
+  age: number | undefined;
+}
+const me: Person = { name: 'gzx', age: 16 }; // 定义变量并指定类型
+type P = typeof me;  // 获取变量的类型 { name: string, age: number | undefined }
+const you: typeof me = { name: 'mabaoguo', age: 69 };  // 可以通过编译
+
+// 根据左侧判断出是 js 中的执行方式
+const typestr = typeof me;   // typestr 的值为 "object"
+```
+
+### `keyof`
+`keyof`可以获取一个**类型所有键值**，返回一个**联合类型**，如下：
+```ts
+type Person = {
+  name: string;
+  age: number;
+}
+type PersonKey = keyof Person;  // PersonKey 得到的类型为 'name' | 'age'
+
+// 限制访问对象的 key 合法化
+function getValue (p: Person, k: keyof Person) {
+  return p[k];  // 如果 k 不如此定义，则无法以 p[k] 的代码格式通过编译
+}
+```
+### `in`
+`in`只能用在类型的定义中，对**枚举类型**进行遍历，`keyof`返回泛型`T`的所有键枚举类型，`key`是自定义的任何变量名，中间用`in`链接，外围用`[]`包裹起来(这个是固定搭配)，冒号右侧`number`将所有的`key`定义为`number`类型。如下：
+```ts
+type Person = {
+  name: string;
+  age: number;
+}
+// 这个类型可以将任何类型的键值转化成number类型
+type TypeToNumber<T> = {
+  [key in keyof T]: number;
+}
+
+const obj: TypeToNumber<Person> = { name: 10, age: 10 }
+```
+
 ## 类
 ### 基本使用
 ```ts
@@ -792,4 +928,148 @@ user.password = 'admin';
 let DB = new MysqlDB<User>();
 DB.add(user);
 // DB.add({ username: 'ZS', password: '123' }); // 也是不报错的
+```
+### 泛型约束
+有的时候，我们可以不用关注泛型具体的类型，但是有时候，我们需要限定类型，这时候使用`extends`关键字即可:
+```ts
+// 不约束泛型
+function getLength<T> (arg: T) {
+  console.log(arg.length); // 会报错，提示 T 上不存在属性 length
+  return arg;
+}
+
+getLength<string>('22');
+
+// 约束泛型
+// 定义一个约束类型
+type LengthType = { length: string }
+function getLength<T extends LengthType> (arg: T) {
+  console.log(arg.length); 
+  return arg;
+}
+
+getLength('22'); // pass T被约束为必须具备length属性
+getLength(true); // error true不具备length属性，所以报错
+```
+同样的，我们有时候会访问一些自定义的属性，就像下面的代码
+```ts
+function getProprty<T, K> (obj: T, key: K) {
+  return obj[key]; // error 类型K无法用于索引类T
+}
+
+const people = { name: 'xiaozhanng', age: 16 };
+getProprty(people, 'name');
+```
+意思是，我们传入的泛型`K`代表的变量`key`，不一定是存在于泛型`T`的`obj`中的属性。这样就会让代码不够严谨，为解决这一问题，我们可以使用`keyof`，他可以拿到一个类型下所有的属性
+```ts
+function getProprty<T, K extends keyof T> (obj: T, key: K) {
+  return obj[key]; // K被约束为T的属性
+}
+const people = { name: 'xiaozhanng', age: 16 };
+getProprty(people, 'name');
+```
+### 泛型条件
+`extends`其实也可以当做一个三元运算符，如下：
+```ts
+T extends U ? X: Y
+```
+这里便不限制`T`一定要是`U`的子类型，如果是`U`子类型，则将`T`定义为`X`类型，否则定义为`Y`类型。
+### 泛型推断`infer`
+`infer`的中文是“推断”的意思，一般是搭配上面的泛型条件语句使用的，所谓推断，就是你**不用预先指定在泛型列表中**，在运行时会自动判断，不过你得先预定义好整体的结构。举个例子
+```ts
+type Foo<T> = T extends { t: infer Test } ? Test: string
+```
+首选看`extends`后面的内容，`{ t: infer Test }`可以看成是一个包含`t`属性的类型定义，这个`t`属性的类型会通过`infer`进行推断后会赋值给`Test`类型，如果泛型`T`代表的实际参数符合`{ t: infer Test }`的定义那么返回的就是`Test`类型，否则默认返回缺省的`string`类型。
+
+举个例子加深下理解：
+```ts
+type One = Foo<number>  // string，number 不在 { t: infer Test } 的约束范围内
+type Two = Foo<{t: boolean}>  // boolean
+// { t: boolean } extends { t: infer Test } ? Test : string 属性匹配成功，使用 infer 推断出 Test 为 boolean，返回 Test
+type Three = Foo<{ a: number, t: () => void }> // () => void
+// { a: number, t: () => void } extends { t: infer Test } ? Test : string 属性匹配成功，使用 infer 推断出 Test 为 () => void Test
+```
+`infer`用来对**满足的(符合约束的)**泛型类型进行**子类型的抽取(`infer`抽取符合约束的子类型)**，有很多高级的泛型工具也巧妙的使用了这个方法。
+
+## 泛型工具
+### `Partial<T>`
+此工具的作用就是将泛型中全部属性变为可选的，每个属性的类型不变。
+```ts
+type Partial<T> = {
+	[P in keyof T]?: T[P]
+}
+// 遍历泛型 T，将所有的属性变为可选的， T[P] 获得每个属性的类型
+
+// 例子
+type Animal = {
+  name: string,
+  category: string,
+  age: number,
+  eat: () => number
+}
+type PartOfAnimal = Partial<Animal>;
+const ww: PartOfAnimal = { name: 'ww' }; // 属性全部可选后，可以只赋值部分属性了
+```
+### `Record<K, T>`
+此工具的作用是将`K`中所有属性值转化为`T`类型，我们常用它来申明一个普通`object`对象。
+```ts
+// keyof any 对应的类型为 number | string | symbol
+// 也就是可以做对象键(专业说法叫索引 index)的类型集合
+type Record<K extends keyof any,T> = {
+  [key in K]: T;
+}
+
+// 例子
+const obj: Record<string, string> = { 'name': 'zhangsan', 'tag': '打工人' }
+```
+### `Pick<T, K>`
+此工具的作用是将`T`类型中的`K`键列表提取出来，生成新的子键值对类型（交集）
+```ts
+// K 被约束为 T 的键的联合枚举，每个键的类型不变，交集
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+}
+
+// 例子
+type Animal = {
+  name: string;
+  category: string;
+  age: number;
+  eat: () => number;
+}
+
+const bird: Pick<Animal, "name" | "age"> = { name: 'bird', age: 1 }
+```
+### `Exclude<T, U>`
+此工具是在`T`类型中，去除`T`类型和`U`类型的交集，返回剩余的部分（差集）
+```ts
+// 类型 T 在 U 中，则返回 never 否则返回 T
+type Exclude<T, U> = T extends U ? never : T
+
+// 例子
+type T1 = Exclude<"a" | "b" | "c", "a" | "b">;   // "c"
+type T2 = Exclude<string | number | (() => void), Function>; // string | number
+```
+### `Omit<T, K>`
+此工具可认为是适用于键值对对象的`Exclude`，它会去除类型`T`中包含`K`的键值对。
+```ts
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
+```
+### `ReturnType<T>`
+此工具就是获取`T`类型(函数)对应的返回值类型
+```ts
+// 泛型 T 被约束为函数类型
+// 实现部分 T 被约束为函数类型，并且通过 infer 推断出返回值的类型并赋值给泛型 R，返回 R 或者 any
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
+
+// 例子
+function foo(x: string | number): string | number { return 1 }
+type FooType = ReturnType<typeof foo>;  // string | number
+```
+### `Required<T>`
+此工具可以将类型`T`中所有的属性变为必选项
+```ts
+type Required<T> = {
+  [P in keyof T]-?: T[P]
+}
 ```
