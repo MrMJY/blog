@@ -272,6 +272,8 @@ js引擎存在`monitoring process`进程，会持续不断的检查主线程执�
 ![浏览器中的Event Loop](http://www.mjy-blog.cn/blog-assets/浏览器中的EventLoop.jpg)
 
 **总结：当某个宏任务执行完后,会查看是否有微任务队列。如果有，先执行微任务队列中的所有任务，如果没有，会读取宏任务队列中排在最前的任务，执行宏任务的过程中，遇到微任务，依次加入微任务队列。栈空后，再次读取微任务队列里的任务，依次类推。**
+
+**六个阶段：**
 ```js
 console.log(1);
 
@@ -309,15 +311,14 @@ console.log(10)
 **`Node`中的`Event Loop`**
 
 `Node`中的`Event Loop`和浏览器中的是完全不相同的东西。`Node.js`采用`V8`作为`js`的解析引擎，而`I/O`处理方面使用了自己设计的`libuv`，`libuv`是一个基于事件驱动的跨平台抽象层，封装了不同操作系统一些底层特性，对外提供统一的`API`，事件循环机制也是它里面的实现。
-<img src="http://www.mjy-blog.cn/blog-assets/node-eventloop.jpg" style="width: 100%;"></img>
-**Node.js 的运行机制如下：**
+<img src="http://www.mjy-blog.cn/blog-assets/node-eventloop.jpg" style="width: 100%;" />
+
+**Node.js的运行机制如下：**
 
 + `V8`引擎解析`JavaScript`脚本
 + 解析后的代码，调用`Node API`
 + `libuv`库负责`Node API`的执行。它将不同的任务分配给不同的线程，形成一个`Event Loop`，以异步的方式将任务的执行结果返回给`V8`引擎
 + `V8`引擎再将结果返回给用户
-
-**六个阶段：**
 
 其中`libuv`引擎中的事件循环分为6个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当**队列为空**或者**执行的回调函数数量到达系统设定的阈值**，就会进入下一阶段。
 

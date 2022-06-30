@@ -238,7 +238,7 @@ server.listen('8088');
 
 **Vue项目部署Nginx常用配置**
 
-```.config
+```sh
 upstream backend {
     server 127.0.0.1:7052;
 }
