@@ -60,7 +60,7 @@ Untracked:未被跟踪， Unmodified:未改动， Modified:已改动， Stage:�
 
 创建一个名为 `.gitignore`的文件，列出要忽略的文件的模式。
 
-```.gitignore
+```sh
 # 这是一行注释
 .gitignore
 node_modules

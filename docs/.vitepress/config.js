@@ -42,9 +42,14 @@ export default {
           text: "DOM",
           collapsed: true,
           collapsible: true,
-          items: [
-            { text: "HTML", link: "/start/html/" },
-            { text: "Canvas", link: "/start/html/canvas" }
+          items: [{
+              text: "HTML",
+              link: "/start/html/"
+            },
+            {
+              text: "Canvas",
+              link: "/start/html/canvas"
+            }
           ]
         },
         {
@@ -60,38 +65,61 @@ export default {
           text: "JavaScript",
           collapsed: true,
           collapsible: true,
-          items: [
-            { text: "ES6", link: "/start/js/es6" },
-            { text: "模块化", link: "/start/js/module" },
-            { text: "数据结构", link: "/start/js/data-structure" },
-            { text: "闭包", link: "/start/js/" }
+          items: [{
+              text: "ES6",
+              link: "/start/js/es6"
+            },
+            {
+              text: "模块化",
+              link: "/start/js/module"
+            },
+            {
+              text: "数据结构",
+              link: "/start/js/data-structure"
+            },
+            {
+              text: "闭包",
+              link: "/start/js/"
+            }
           ]
         },
         {
           text: "TypeScript",
           collapsed: true,
           collapsible: true,
-          items: [
-            { text: "基本语法", link: "/start/js/typescript" },
-            { text: "框架中使用TypeScript", link: "/start/js/project+ts" }
+          items: [{
+              text: "基本语法",
+              link: "/start/js/typescript"
+            },
+            {
+              text: "框架中使用TypeScript",
+              link: "/start/js/project+ts"
+            }
           ]
         },
         {
           text: "网络协议",
           collapsed: true,
           collapsible: true,
-          items: [
-            { text: "HTTP协议", link: "/start/http/" },
-            { text: "HTTP缓存", link: "/start/http/http-cache" },
-            { text: "WebSocket", link: "/start/http/websocket" }
+          items: [{
+              text: "HTTP协议",
+              link: "/start/http/"
+            },
+            {
+              text: "HTTP缓存",
+              link: "/start/http/http-cache"
+            },
+            {
+              text: "WebSocket",
+              link: "/start/http/websocket"
+            }
           ]
         },
         {
           text: "框架",
           collapsed: true,
           collapsible: true,
-          items: [
-            {
+          items: [{
               text: "Vue",
               link: "/start/framework/Vue/Vue3"
             },
@@ -105,61 +133,76 @@ export default {
           text: "工具",
           collapsed: true,
           collapsible: true,
-          items: [
-            { text: "Jenkins", link: "/start/project/jenkins" },
-            { text: "Git", link: "/start/project/git" },
-            { text: "Webpack4", link: "/start/project/webpack" },
-            { text: "Gulp4", link: "/start/project/gulp" },
-            { text: "Vite", link: "/start/project/vite" },
-            { text: "Mock", link: "/start/project/mock" },
-            { text: "Nginx", link: "/start/project/nginx" }
-          ]
-        }
-      ],
-      "/interviewQuestions": [
-        {
-          text: "面试题",
-          items: [
-            {
-              text: "基础",
-              link: "/interviewQuestions/base"
+          items: [{
+              text: "Jenkins",
+              link: "/start/project/jenkins"
             },
             {
-              text: "语法",
-              link: "/interviewQuestions/syntax"
+              text: "Git",
+              link: "/start/project/git"
             },
             {
-              text: "浏览器",
-              link: "/interviewQuestions/browser"
+              text: "Webpack4",
+              link: "/start/project/webpack"
             },
             {
-              text: "框架",
-              link: "/interviewQuestions/frame"
+              text: "Gulp4",
+              link: "/start/project/gulp"
             },
             {
-              text: "工程",
-              link: "/interviewQuestions/project"
+              text: "Vite",
+              link: "/start/project/vite"
             },
             {
-              text: "网络",
-              link: "/interviewQuestions/internet"
+              text: "Mock",
+              link: "/start/project/mock"
             },
             {
-              text: "性能",
-              link: "/interviewQuestions/performance"
-            },
-            {
-              text: "插件",
-              link: "/interviewQuestions/plugin"
+              text: "Nginx",
+              link: "/start/project/nginx"
             }
           ]
         }
       ],
-      "/webpackSource": [
-        {
+      "/interviewQuestions": [{
+        text: "面试题",
+        items: [{
+            text: "基础",
+            link: "/interviewQuestions/base"
+          },
+          {
+            text: "语法",
+            link: "/interviewQuestions/syntax"
+          },
+          {
+            text: "浏览器",
+            link: "/interviewQuestions/browser"
+          },
+          {
+            text: "框架",
+            link: "/interviewQuestions/frame"
+          },
+          {
+            text: "工程",
+            link: "/interviewQuestions/project"
+          },
+          {
+            text: "网络",
+            link: "/interviewQuestions/internet"
+          },
+          {
+            text: "性能",
+            link: "/interviewQuestions/performance"
+          },
+          {
+            text: "插件",
+            link: "/interviewQuestions/plugin"
+          }
+        ]
+      }],
+      "/webpackSource": [{
           text: "Webpack源码",
-          items: [
-            {
+          items: [{
               text: "基础知识",
               link: "/webpackSource/"
             },
@@ -176,25 +219,38 @@ export default {
         {
           text: "源码学习",
           collapsible: true,
-          items: [
-            { text: "Webpack-cli", link: "/webpackSource/source/webpack-cli" },
-            { text: "Webpack", link: "/webpackSource/source/webpack" },
-            { text: "内置插件", link: "/webpackSource/source/plugins" },
+          items: [{
+              text: "Webpack-cli",
+              link: "/webpackSource/source/webpack-cli"
+            },
+            {
+              text: "Webpack",
+              link: "/webpackSource/source/webpack"
+            },
+            {
+              text: "内置插件",
+              link: "/webpackSource/source/plugins"
+            },
             {
               text: "ModuleFactory",
               link: "/webpackSource/source/moduleFactory"
             },
-            { text: "Module", link: "/webpackSource/source/module" }
+            {
+              text: "Module",
+              link: "/webpackSource/source/module"
+            }
           ]
         }
       ],
-      "/reactSource": [
-        {
-          text: "源码调试",
-          collapsible: true,
-          link: "/reactSource/"
-        }
-      ]
+      "/reactSource": [{
+        text: "源码调试",
+        collapsible: true,
+        link: "/reactSource/"
+      }]
+    },
+    footer: {
+      message: "MIT Licensed",
+      copyright: "Copyright © 京ICP备20024791号-1 MrMJY"
     }
   }
 };
